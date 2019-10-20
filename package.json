@@ -10,8 +10,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/datetimepicker": "^2.1.0",
     "react": "16.9.0",
     "react-native": "0.61.2",
+    "react-native-datepicker": "^1.7.2",
     "react-native-floating-action": "^1.19.1"
   },
   "devDependencies": {

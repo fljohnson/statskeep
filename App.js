@@ -5,6 +5,7 @@ import { Entry } from './Entry.js';
 
 export default class FlatListBasics extends Component {
 		
+	key = -1; //this will actually come from one of the list rows
 	state = {
 		editing: false,
 	  };
@@ -17,6 +18,7 @@ export default class FlatListBasics extends Component {
 clickHandler = () => {
     //function to handle click on floating Action Button
     //Alert.alert('Floating Button Clicked');
+    this.key ++;
    this.setEditing(true);
   };
   
@@ -46,6 +48,7 @@ clickHandler = () => {
         <Entry
         visible = {this.state.editing} 
         onDoneEditing={this.onDoneEditing}
+        keya = {this.key}
          />
         <TouchableOpacity
           activeOpacity={0.7}
