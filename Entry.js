@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Modal, Text, TouchableHighlight, View, Button, Alert,Picker,TextInput} from 'react-native';
+import {Modal, Text, TouchableHighlight, View, Button, Alert,Picker,TextInput,StyleSheet} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 export class Entry extends Component {
   //TODO: add user-friendly date and time to this state
@@ -51,8 +51,11 @@ export class Entry extends Component {
   }
 
 saveData = () => {
-	var row= "StatDate:"+this.state.statdate+"\r\n"+"StatType:"+this.state.stattype+"\r\n";
+	//JS Date().getTime() is in milliseconds (Un*x timestamps are in seconds) 
+	//Both are based on "Jan 1, 1970, 00:00:00.000 GMT" - "start of the Un*x epoch"
+	var row= "StatDate:"+this.state.statdate.getTime()+"\r\n"+"StatType:"+this.state.stattype+"\r\n";
 	row+="StatValue:"+this.state.statvalue+"\r\n"+"Comments:"+this.state.notes;
+	//now here, we need to yak at persistent storage
 	alert(row);
 }
 gotVisible = () =>{
@@ -80,49 +83,83 @@ onValChange = (text) => {
           visible = {this.props.visible}
           onShow = {this.gotVisible}
           >
-          <View style={{marginTop: 22}}>
+          <View style={styles.EntryDlg}>
             <View>
-              <Text>Hello World!</Text>
-				
+			<View style = {styles.Valrow}>
+			<View  >
 		<Picker
 		  selectedValue={this.state.stattype}
-		  style={{height: 50, width: 200}}
+		  style={{height: 50, width: 170}}
 		  onValueChange={this.onTypeChange}>
 		  <Picker.Item label="Blood Glucose" value="Blood Glucose"/>
 		  <Picker.Item label="Weight"  value="Weight"/>
 		</Picker>
+		</View>
+		<View>
 		<TextInput
       style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
       onChangeText={this.onValChange}
       value={this.state.statvalue}
       keyboardType="decimal-pad"
 		/>
+		</View>
+		</View>
 
 
-        <View>
+        <View style = {styles.Whenbtn}>
           <Button onPress={this.datepicker} title={this.state.statdate.toDateString()} />
         </View>
-         <View>
+         <View style = {styles.Whenbtn}>
           <Button onPress={this.timepicker} title={this.state.statdate.toTimeString()} />
         </View>
         
         { this.state.show && <DateTimePicker value={this.state.statdate}
                     mode={this.state.mode}
-                    is24Hour={true}
+                    is24Hour={false}
                     display="default"
                     onChange={this.setDate} />
         }
-
-              <TouchableHighlight
-                onPress={() => {
+			<View style={styles.Valrow}>
+             <View style={styles.Savebtn}>
+              <Button onPress={() => {
 					this.saveData();
                   this.props.onDoneEditing();
-                }}>
-                <Text>Hide Modal</Text>
-              </TouchableHighlight>
+                }} disabled={(this.state.statvalue.length == 0)} title="Save" />
+               </View>
+             <View style={styles.Cancelbtn}>
+              <Button onPress={this.props.onDoneEditing} title="Cancel" />
+              </View>
+			</View>
             </View>
           </View>
         </Modal>
     );
   }
 }
+
+const styles = StyleSheet.create({
+	EntryDlg: {
+		flexDirection:'column',
+		flex:1,
+		justifyContent:'center',
+		marginLeft:4,
+		marginRight:4
+	},
+	Valrow: {
+		flexDirection:'row',
+		justifyContent:'center'
+	},
+	Whenbtn: {
+		marginTop:4
+	},
+	Savebtn: {
+		marginTop:4,
+		flex:1,
+		marginRight:2
+	},
+	Cancelbtn: {
+		marginTop:4,
+		flex:1,
+		marginLeft:2
+	}
+})
