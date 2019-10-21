@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, Alert } from 'react-native';
 import { Entry } from './Entry.js';
-
+import { openDatabase } from 'react-native-sqlite-storage';
+var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
 
 export default class FlatListBasics extends Component {
 		

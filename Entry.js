@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Modal, Text, TouchableHighlight, View, Button, Alert,Picker,TextInput,StyleSheet} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { openDatabase } from 'react-native-sqlite-storage';
+var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
 export class Entry extends Component {
   //TODO: add user-friendly date and time to this state
   state = {
@@ -50,13 +52,50 @@ export class Entry extends Component {
     this.show('time');
   }
 
+	do_insert = (when_secs,stat_type,value,notes) => {
+	db.transaction(function(tx) {
+	tx.executeSql(
+	  'INSERT INTO stats (utc_timestamp, statistic, val, notes) VALUES (?,?,?,?)',
+	  [when_secs, stat_type, value,notes],
+	  (tx, results) => {
+		console.log('Results', results.rowsAffected);
+		if (results.rowsAffected > 0) {
+		  Alert.alert(
+			'Success',
+			'Added new record',
+			[
+			  {
+				text: 'OK',
+				onPress: () =>
+                  this.props.onDoneEditing(),
+				  //that.props.navigation.navigate('HomeScreen'),
+			  },
+			],
+			{ cancelable: false }
+		  );
+		} else {
+			console.log("Blew it:".results);
+		  alert('Whiffed');
+		}
+	  }
+	);
+  });
+}
+
 saveData = () => {
 	//JS Date().getTime() is in milliseconds (Un*x timestamps are in seconds) 
 	//Both are based on "Jan 1, 1970, 00:00:00.000 GMT" - "start of the Un*x epoch"
 	var row= "StatDate:"+this.state.statdate.getTime()+"\r\n"+"StatType:"+this.state.stattype+"\r\n";
 	row+="StatValue:"+this.state.statvalue+"\r\n"+"Comments:"+this.state.notes;
 	//now here, we need to yak at persistent storage
-	alert(row);
+	var trunotes = null;
+	if(this.state.notes != null && this.state.notes.length > 0) {
+		trunotes = this.state.notes;
+	}
+	this.do_insert(Math.floor(this.state.statdate.getTime()/1000),
+		this.state.stattype,this.state.statvalue,trunotes
+	);
+	
 }
 gotVisible = () =>{
 	//alert(this.props.keya);
@@ -92,6 +131,7 @@ onValChange = (text) => {
 		  style={{height: 50, width: 170}}
 		  onValueChange={this.onTypeChange}>
 		  <Picker.Item label="Blood Glucose" value="Blood Glucose"/>
+		  <Picker.Item label="Food Log" value="Food Log"/>
 		  <Picker.Item label="Weight"  value="Weight"/>
 		</Picker>
 		</View>
@@ -123,7 +163,6 @@ onValChange = (text) => {
              <View style={styles.Savebtn}>
               <Button onPress={() => {
 					this.saveData();
-                  this.props.onDoneEditing();
                 }} disabled={(this.state.statvalue.length == 0)} title="Save" />
                </View>
              <View style={styles.Cancelbtn}>
@@ -162,4 +201,7 @@ const styles = StyleSheet.create({
 		flex:1,
 		marginLeft:2
 	}
-})
+});
+
+
+

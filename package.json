@@ -14,7 +14,8 @@
     "react": "16.9.0",
     "react-native": "0.61.2",
     "react-native-datepicker": "^1.7.2",
-    "react-native-floating-action": "^1.19.1"
+    "react-native-floating-action": "^1.19.1",
+    "react-native-sqlite-storage": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "7.6.4",
