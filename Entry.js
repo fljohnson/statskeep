@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Modal, Text, TouchableHighlight, View, Button, Alert,Picker,TextInput,StyleSheet} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+
 import { openDatabase } from 'react-native-sqlite-storage';
 var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
 export class Entry extends Component {
@@ -123,12 +124,7 @@ onValChange = (text) => {
     const {navigate} = this.props.navigation;
     const currec = (this.props.navigation.getParam('keya', '-2'));
     return (
-        <Modal
-          animationType="slide"
-          transparent={false}
-          visible = {this.props.visible}
-          onShow = {this.gotVisible}
-          >
+        
           <View style={styles.EntryDlg}>
             <View>
             
@@ -180,7 +176,6 @@ onValChange = (text) => {
 			</View>
             </View>
           </View>
-        </Modal>
     );
   }
 }

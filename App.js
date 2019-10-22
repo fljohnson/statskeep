@@ -10,8 +10,14 @@ const MainNavigator = createStackNavigator({
 		title: 'Stats',
 	  },
   }, 
-  Line: {screen: Entry},
-});
+  Line: {screen: Entry,
+	  navigationOptions:{
+		title: 'Single Entry',
+	  }
+	 },
+},{
+    mode: 'modal',
+  });
 
 const App = createAppContainer(MainNavigator);
 
