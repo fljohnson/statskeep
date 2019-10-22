@@ -13,11 +13,12 @@ export class Entry extends Component {
     statvalue:'',
     notes:''
   }
-    keya = -1;
+    keya = -2;
 	initDate = new Date();
 	visible = false;
 	onDoneEditing = () =>{
 	};
+  
   
   setDate = (event, date) => {
     date = date || this.state.statdate;
@@ -37,6 +38,7 @@ export class Entry extends Component {
     });
   }
  
+ 
   show = mode => {
     this.setState({
       show: true,
@@ -53,6 +55,8 @@ export class Entry extends Component {
   }
 
 	do_insert = (when_secs,stat_type,value,notes) => {
+		
+  var that = this;
 	db.transaction(function(tx) {
 	tx.executeSql(
 	  'INSERT INTO stats (utc_timestamp, statistic, val, notes) VALUES (?,?,?,?)',
@@ -67,7 +71,7 @@ export class Entry extends Component {
 			  {
 				text: 'OK',
 				onPress: () =>
-                  this.props.onDoneEditing(),
+                  that.props.navigation.goBack(),
 				  //that.props.navigation.navigate('HomeScreen'),
 			  },
 			],
@@ -115,6 +119,9 @@ onValChange = (text) => {
 }
   
   render() {
+	  
+    const {navigate} = this.props.navigation;
+    const currec = (this.props.navigation.getParam('keya', '-2'));
     return (
         <Modal
           animationType="slide"
@@ -124,6 +131,8 @@ onValChange = (text) => {
           >
           <View style={styles.EntryDlg}>
             <View>
+            
+      <Text> WHOAMI:{currec} </Text>
 			<View style = {styles.Valrow}>
 			<View  >
 		<Picker
@@ -166,7 +175,7 @@ onValChange = (text) => {
                 }} disabled={(this.state.statvalue.length == 0)} title="Save" />
                </View>
              <View style={styles.Cancelbtn}>
-              <Button onPress={this.props.onDoneEditing} title="Cancel" />
+              <Button onPress={() =>this.props.navigation.goBack()} title="Cancel" />
               </View>
 			</View>
             </View>
