@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, Alert } from 'react-native';
+import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, Alert,Dimensions,Button } from 'react-native';
 
 import { openDatabase } from 'react-native-sqlite-storage';
 var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
@@ -9,6 +9,8 @@ export class FlatListBasics extends Component {
 	key = -1; //this will actually come from one of the list rows
 	state = {
 		editing: false,
+			goods: []
+		
 	  };
 	setEditing(visible) {
 		this.setState({editing: visible});
@@ -27,7 +29,70 @@ clickHandler = () => {
     title: 'Stats',
   };
   
-  
+  didBlurSubscription = this.props.navigation.addListener(
+  'willFocus',
+  payload => {
+    this.do_fetch(null,null,null);
+  }
+);
+
+do_fetch = (when_start,when_end,what_type) => {
+	db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM stats ORDER BY utc_timestamp',
+        [],
+        (tx, results) => {
+          var len = results.rows.length;
+          console.log('len',len);
+          if(len == 0)
+          {
+			  this.setState({goods:[]});
+			  alert("No records found");
+			  return;
+		  }
+		   var temp = [];
+			for (let i = 0; i < results.rows.length; ++i) {
+			  temp.push(results.rows.item(i));
+			}
+		  this.setState({
+			  goods: temp
+		  });
+	  }
+	  );
+	  });
+	  
+	
+}
+
+constructor(props) {
+	super(props);
+  db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM stats ORDER BY utc_timestamp',
+        [],
+        (tx, results) => {
+          var len = results.rows.length;
+          console.log('len',len);
+          if(len == 0)
+          {
+			  this.setState({goods:[]});
+			  alert("No records found");
+			  return;
+		  }
+		   var temp = [];
+			for (let i = 0; i < results.rows.length; ++i) {
+			  temp.push(results.rows.item(i));
+			}
+			this.state = {
+				editing: false,
+					goods: temp
+				
+			  };
+	  }
+	  );
+	  });	
+}
+
   render() {
 	  
     const {navigate} = this.props.navigation;
@@ -39,19 +104,56 @@ clickHandler = () => {
     return (
       <View style={styles.container}>
         <FlatList
-          data={[
-            {key: 'Devin'},
-            {key: 'Dan'},
-            {key: 'Dominic'},
-            {key: 'Jackson'},
-            {key: 'James'},
-            {key: 'Joel'},
-            {key: 'John'},
-            {key: 'Jillian'},
-            {key: 'Jimmy'},
-            {key: 'Julie'},
-          ]}
-          renderItem={({item}) => <Text style={styles.item}>{item.key}</Text>}
+          data={this.state.goods}
+          keyExtractor={(item, index) => item.id.toString()}
+         
+          renderItem={({item}) => {
+			  var whatday = new Date(item.utc_timestamp*1000);
+			  var value = item.val;
+			  var valstyle = styles.itemValue;
+			  if(item.statistic == "Food Log") {
+				  value = "(see notes)";
+				  valstyle = styles.seeNotes;
+			  }
+			  var localhrs = whatday.getHours();
+			  var meridiem = " AM";
+			  if(localhrs >= 12) {
+				  meridiem = " PM";
+			  }
+			  if(localhrs > 12) {
+				  localhrs = localhrs - 12;
+			  }
+			  var options = {
+				  hour: '2-digit',
+				  minute: '2-digit',
+				  hour12: true
+				};
+				var timeString = ("0"+localhrs).substr(-2, 2)+":"+("0"+whatday.getMinutes()).substr(-2, 2)+meridiem;
+			  var friendly = whatday.toLocaleDateString()+"\r\n "+timeString;
+			  if(!item.notes) {
+				  return (
+				   <View style={styles.listItem}>
+						<Text style={styles.itemDate}>{friendly}</Text>
+						<Text style={styles.itemType}>{item.statistic}</Text>
+						<Text style={valstyle}>{value}</Text>
+					</View>
+					);
+			  }
+			  
+			  return (
+			   <View style={styles.listItem}>
+					<Text style={styles.itemDate}>{friendly}</Text>
+					<Text style={styles.itemType}>{item.statistic}</Text>
+					<Text style={valstyle}>{value}</Text>
+					<View style={styles.notesBtn}>
+						<Button onPress={() => {
+							Alert.alert("Notes",item.notes);
+						}} title="Notes..." />
+					</View>
+				</View>
+				)
+			  }
+			  }
         />
         <TouchableOpacity
           activeOpacity={0.7}
@@ -77,13 +179,50 @@ uri:'https://raw.githubusercontent.com/AboutReact/sampleresource/master/plus_ico
 const styles = StyleSheet.create({
   container: {
    flex: 1,
-   paddingTop: 22
+   paddingTop: 22,
   },
-  item: {
-    padding: 10,
-    fontSize: 28,
+  listItem: {
+	textAlignVertical:'center',
+    maxWidth: Dimensions.get('window').width,
+    flex:1,
+   flexDirection: 'row',
+   justifyContent:'flex-start',
+    backgroundColor: '#fff',
+    marginBottom: 10,
+},
+  itemDate: {
+	textAlignVertical:'center',
+    marginRight: 3,
+    fontSize: 18,
     height: 54,
   },
+  
+  itemType: {
+	textAlignVertical:'center',
+    marginLeft: 5,
+    marginRight: 5,
+    fontSize: 18,
+    height: 54,
+  },
+  itemValue: {
+	textAlignVertical:'center',
+    marginLeft: 5,
+    marginRight: 5,
+    fontSize: 18,
+    height: 54,
+  },
+  seeNotes: {
+	textAlignVertical:'center',
+    marginLeft: 5,
+    marginRight: 5,
+    fontSize: 12,
+    fontStyle:"italic",
+    height: 54,
+  },
+  notesBtn: {
+	  marginLeft:10,
+	  marginTop:9,
+},
   
   
   TouchableOpacityStyle: {

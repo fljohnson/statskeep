@@ -118,7 +118,20 @@ onTypeChange = (itemValue, itemIndex) => {
 onValChange = (text) => {
 	this.setState({statvalue: text})
 }
+
+onNotesChange = (text) => {
+	this.setState({notes: text})
+}
   
+  shouldDisable = () => {
+	  if(this.state.stattype == "Food Log") {
+		  return this.state.notes.length == 0;
+	  }
+	  else
+	  {
+		return (this.state.statvalue.length == 0) ;
+	}
+  }
   render() {
 	  
     const {navigate} = this.props.navigation;
@@ -164,11 +177,20 @@ onValChange = (text) => {
                     display="default"
                     onChange={this.setDate} />
         }
+        <View style={styles.Valrow}>
+			<TextInput
+				multiline
+				onChangeText={this.onNotesChange}
+				value={this.state.notes}
+			  />
+		  </View>
+        
+        
 			<View style={styles.Valrow}>
              <View style={styles.Savebtn}>
               <Button onPress={() => {
 					this.saveData();
-                }} disabled={(this.state.statvalue.length == 0)} title="Save" />
+                }} disabled={this.shouldDisable()} title="Save" />
                </View>
              <View style={styles.Cancelbtn}>
               <Button onPress={() =>this.props.navigation.goBack()} title="Cancel" />
