@@ -12,7 +12,9 @@ export class Entry extends Component {
     show: false,
     stattype: 'Blood Glucose',
     statvalue:'',
-    notes:''
+    notes:'',
+    record_id:-1,
+    original_id:0,
   }
     keya = -2;
 	initDate = new Date();
@@ -55,6 +57,95 @@ export class Entry extends Component {
     this.show('time');
   }
 
+ didBlurSubscription = this.props.navigation.addListener(
+  'willFocus',
+  payload => {
+    const currec = (this.props.navigation.getParam('keya', '-2'));
+    this.loadData(currec);
+  }
+);
+
+do_fetch = (rec_id) => {
+	db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM stats WHERE id = ?',
+        [rec_id],
+        (tx, results) => {
+          var len = results.rows.length;
+          if(len == 0)
+          {
+			  this.setState({goods:[]});
+			  Alert.alert("Record "+id+" not found");
+			  return;
+		  }
+		   var temp = [];
+			for (let i = 0; i < results.rows.length; ++i) {
+			  temp.push(results.rows.item(i));
+			}
+		  var newnotes= '';
+		  if(temp[0].notes){
+			  newnotes = temp[0].notes;
+		  }
+		  console.log("fetched:",temp);
+		  
+		  this.setState({
+			  notes: newnotes,
+			  stattype: temp[0].statistic,
+			  statvalue:temp[0].val,
+			  statdate: new Date(temp[0].utc_timestamp*1000),
+			  record_id:rec_id,
+			  original_id:temp[0].original_id
+		  });
+	  }
+	  );
+	  });
+	  
+	
+}
+
+	do_replace = (oldrec,when_secs,stat_type,value,notes,original_id) => {
+		var that = this;
+	db.transaction(function(tx) { 
+		tx.executeSql(
+			'UPDATE stats SET active=\'N\' WHERE id = (?)',
+			[oldrec],
+			(tx,results) => {
+				if(results.rowsAffected != 1) {
+					console.log("Update Blew it:".results);
+					Alert.alert('Whiffed on Update');
+					return;
+				}
+			}
+		); 
+		//Fire two!
+		tx.executeSql(
+	  'INSERT INTO stats (utc_timestamp, statistic, val, notes,original_id) VALUES (?,?,?,?,?)',
+	  [when_secs, stat_type, value,notes,original_id],
+	  (tx, results) => {
+		console.log('Results', results.rowsAffected);
+		if (results.rowsAffected > 0) {
+		  Alert.alert(
+			'Success',
+			'Updated record',
+			[
+			  {
+				text: 'OK',
+				onPress: () =>
+                  that.props.navigation.goBack(),
+				  //that.props.navigation.navigate('HomeScreen'),
+			  },
+			],
+			{ cancelable: false }
+		  );
+		} else {
+			console.log("Blew it on phase two:".results);
+		  Alert.alert('Did update, bombed on insert');
+		}
+	  }
+	);
+	});
+}
+
 	do_insert = (when_secs,stat_type,value,notes) => {
 		
   var that = this;
@@ -80,7 +171,7 @@ export class Entry extends Component {
 		  );
 		} else {
 			console.log("Blew it:".results);
-		  alert('Whiffed');
+		  Alert.alert('Whiffed');
 		}
 	  }
 	);
@@ -97,11 +188,34 @@ saveData = () => {
 	if(this.state.notes != null && this.state.notes.length > 0) {
 		trunotes = this.state.notes;
 	}
-	this.do_insert(Math.floor(this.state.statdate.getTime()/1000),
-		this.state.stattype,this.state.statvalue,trunotes
-	);
+	if(this.state.record_id <0){		
+		this.do_insert(Math.floor(this.state.statdate.getTime()/1000),
+			this.state.stattype,this.state.statvalue,trunotes
+		);
+	}
+	else {
+		var starting_id = this.state.original_id;
+		if(starting_id < 1) {
+			starting_id = this.state.record_id;
+		}
+		this.do_replace(this.state.record_id,Math.floor(this.state.statdate.getTime()/1000),
+			this.state.stattype,this.state.statvalue,trunotes,starting_id
+		);
+	}
 	
 }
+
+loadData = (rec) => {
+	if(this.state.loaded) {
+		return;
+	}
+	this.setState({
+		loaded:true
+	});
+	if(rec > 0){
+		this.do_fetch(rec);
+	}
+} 
 gotVisible = () =>{
 	//alert(this.props.keya);
 	//we actualy fetch the record with that key value
@@ -132,16 +246,27 @@ onNotesChange = (text) => {
 		return (this.state.statvalue.length == 0) ;
 	}
   }
+  
+  possibleHistoryBtn = () => {
+	  if(this.state.original_id > 0) {
+		  return (
+	  <View style={styles.HistoryBtn}>
+			<Button onPress={() => {
+				Alert.alert("Forthcoming","History is forthcoming (lesser priority)");
+			}} title="Edited. Click to See prior versions." />
+		</View>
+		);
+	}
+  }
   render() {
 	  
-    const {navigate} = this.props.navigation;
-    const currec = (this.props.navigation.getParam('keya', '-2'));
+    //const {navigate} = this.props.navigation;
+
     return (
         
           <View style={styles.EntryDlg}>
             <View>
             
-      <Text> WHOAMI:{currec} </Text>
 			<View style = {styles.Valrow}>
 			<View  >
 		<Picker
@@ -185,7 +310,8 @@ onNotesChange = (text) => {
 			  />
 		  </View>
         
-        
+         
+			{this.possibleHistoryBtn()}
 			<View style={styles.Valrow}>
              <View style={styles.Savebtn}>
               <Button onPress={() => {
@@ -193,7 +319,7 @@ onNotesChange = (text) => {
                 }} disabled={this.shouldDisable()} title="Save" />
                </View>
              <View style={styles.Cancelbtn}>
-              <Button onPress={() =>this.props.navigation.goBack()} title="Cancel" />
+              <Button onPress={() => this.props.navigation.goBack()} title="Cancel" />
               </View>
 			</View>
             </View>
@@ -215,6 +341,8 @@ const styles = StyleSheet.create({
 		justifyContent:'center'
 	},
 	Whenbtn: {
+		marginLeft:60,
+		marginRight:60,
 		marginTop:4
 	},
 	Savebtn: {
@@ -226,8 +354,16 @@ const styles = StyleSheet.create({
 		marginTop:4,
 		flex:1,
 		marginLeft:2
-	}
+	},
+	HistoryBtn: {
+	  marginTop:9,
+	},
 });
 
 
-
+/*
+ * Known TODOS:
+ * 1. Export data to a CSV file, and add type/date searches
+ * 2. Format time button (see Home.js for how to do it), then add 20 to Whenbtn margins.
+ * 3. Present the history of edited entty (way low priority)
+*/

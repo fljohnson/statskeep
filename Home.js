@@ -39,7 +39,7 @@ clickHandler = () => {
 do_fetch = (when_start,when_end,what_type) => {
 	db.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM stats ORDER BY utc_timestamp',
+        'SELECT * FROM stats WHERE active=\'Y\' ORDER BY utc_timestamp',
         [],
         (tx, results) => {
           var len = results.rows.length;
@@ -68,7 +68,7 @@ constructor(props) {
 	super(props);
   db.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM stats ORDER BY utc_timestamp',
+        'SELECT * FROM stats WHERE active=\'Y\' ORDER BY utc_timestamp',
         [],
         (tx, results) => {
           var len = results.rows.length;
@@ -93,6 +93,20 @@ constructor(props) {
 	  });	
 }
 
+	possibleNotesBtn = (item) => {
+		if(item.notes) {
+			
+		return (
+		<View style={styles.notesBtn}>
+							<Button onPress={() => {
+								Alert.alert("Notes",item.notes);
+							}} title="Notes..." />
+						</View>
+					
+		);
+		}
+	}
+	
   render() {
 	  
     const {navigate} = this.props.navigation;
@@ -130,26 +144,16 @@ constructor(props) {
 				};
 				var timeString = ("0"+localhrs).substr(-2, 2)+":"+("0"+whatday.getMinutes()).substr(-2, 2)+meridiem;
 			  var friendly = whatday.toLocaleDateString()+"\r\n "+timeString;
-			  if(!item.notes) {
-				  return (
-				   <View style={styles.listItem}>
-						<Text style={styles.itemDate}>{friendly}</Text>
-						<Text style={styles.itemType}>{item.statistic}</Text>
-						<Text style={valstyle}>{value}</Text>
-					</View>
-					);
-			  }
-			  
 			  return (
 			   <View style={styles.listItem}>
+				<TouchableOpacity style={styles.sureListItems}
+					onPress={() => this.props.navigation.push('Line', {keya: item.id})}
+				>
 					<Text style={styles.itemDate}>{friendly}</Text>
 					<Text style={styles.itemType}>{item.statistic}</Text>
 					<Text style={valstyle}>{value}</Text>
-					<View style={styles.notesBtn}>
-						<Button onPress={() => {
-							Alert.alert("Notes",item.notes);
-						}} title="Notes..." />
-					</View>
+				</TouchableOpacity>
+				{this.possibleNotesBtn(item)}
 				</View>
 				)
 			  }
@@ -189,6 +193,11 @@ const styles = StyleSheet.create({
    justifyContent:'flex-start',
     backgroundColor: '#fff',
     marginBottom: 10,
+},
+sureListItems: {
+	flex:1,
+   flexDirection: 'row',
+   justifyContent:'flex-start',
 },
   itemDate: {
 	textAlignVertical:'center',
