@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, Alert,Dimensions,Button } from 'react-native';
+import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, Alert,Dimensions,Button,DrawerLayoutAndroid } from 'react-native';
 
 import { openDatabase } from 'react-native-sqlite-storage';
 var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
@@ -107,9 +107,34 @@ constructor(props) {
 		}
 	}
 	
+toggleDrawer = () => {
+	if(!this.state.drawerOpen) {
+		this.refs["thedrawer"].openDrawer();
+		this.setState({
+			drawerOpen:true
+		});
+	}
+	else{
+		this.refs["thedrawer"].closeDrawer();
+		this.setState({
+			drawerOpen:false
+		});
+	}
+}
+	
   render() {
 	  
     const {navigate} = this.props.navigation;
+    var navigationView = (
+    <View style={{flex: 1, backgroundColor: '#fff' }}>
+		<View>
+		  <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>Filter by date and/or type</Text>
+		</View>
+		<View>
+		  <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>Export to CSV file</Text>
+		</View>
+    </View>
+  );
      /*
         Special thanks to Snehal Agarwal (https://aboutreact.com/react-native-floating-action-button/)
         for cutting through the crazy-talk and non-functional code regarding the Floating Action Button 
@@ -117,6 +142,15 @@ constructor(props) {
 
     return (
       <View style={styles.container}>
+      <View style={styles.mubutton}>
+      <Button title="Info" onPress={() => this.toggleDrawer()} />
+      </View>
+      
+    <DrawerLayoutAndroid
+    ref={"thedrawer"}
+      drawerWidth={200}
+      drawerPosition={"left"}
+      renderNavigationView={() => navigationView}>
         <FlatList
           data={this.state.goods}
           keyExtractor={(item, index) => item.id.toString()}
@@ -174,6 +208,8 @@ uri:'https://raw.githubusercontent.com/AboutReact/sampleresource/master/plus_ico
             style={styles.FloatingButtonStyle}
           />
         </TouchableOpacity>
+        
+    </DrawerLayoutAndroid>
       </View>
       
     );
@@ -232,8 +268,10 @@ sureListItems: {
 	  marginLeft:10,
 	  marginTop:9,
 },
-  
-  
+  mubutton: {
+	  width:54
+  }
+  ,
   TouchableOpacityStyle: {
     position: 'absolute',
     width: 50,
