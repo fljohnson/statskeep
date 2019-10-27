@@ -1,15 +1,38 @@
 import React, {Component} from 'react';
-import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, Alert,Dimensions,Button,DrawerLayoutAndroid } from 'react-native';
+import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, Alert,Dimensions,Button,DrawerLayoutAndroid,Modal, Switch } from 'react-native';
 
 import { openDatabase } from 'react-native-sqlite-storage';
 var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
+var datatypes = [
+	{
+		name:"Blood Glucose",
+		decimal_places:0
+	},
+	{
+		name:"Food Log",
+		decimal_places:-1
+	},
+	{
+		name:"Weight",
+		decimal_places:1
+	},
+];
 
 export class FlatListBasics extends Component {
 		
 	key = -1; //this will actually come from one of the list rows
 	state = {
 		editing: false,
-			goods: []
+			goods: [],
+		filter: {
+			from:new Date(),
+			to:new Date(),
+			types:[],
+			useFrom:false,
+			useTo:false,
+			useType:[true,true,true]
+		},
+		filterModalVisible:false
 		
 	  };
 	setEditing(visible) {
@@ -121,15 +144,163 @@ toggleDrawer = () => {
 		});
 	}
 }
+toggleFilterOnType = (newvalue,index) => {
+	var nufilter = this.state.filter;
+	nufilter.useType[index]=newvalue;
+  this.setState({
+	  filter:nufilter
+  });
+}
+
+toggleFilterBeginDate = (newvalue) =>{
+	var nufilter = this.state.filter;
+	nufilter.useFrom = newvalue;
+  this.setState({
+	  filter:nufilter
+  });
+}
+
+toggleFilterEndDate = (newvalue) =>{
+	var nufilter = this.state.filter;
+	nufilter.useTo = newvalue;
+  this.setState({
+	  filter:nufilter
+  });
+}
+
+
+doFiltering = () => {
+	console.log("Result:",this.state.filter);
+	this.closeFilterDlg();
+}
+
+closeFilterDlg = () => {
+	this.setState({
+		filterModalVisible:false
+	});
+}
+
+openFilterDlg = () => {
+	this.refs["thedrawer"].closeDrawer();
+	this.setState({
+		drawerOpen:false,
+		filterModalVisible:true
+	});
+}
+
+/*
+ <View style = {styles.Whenfirst}>
+			  <Switch onValueChange={this.toggleFilterBeginDate} value={this.state.filter.useFrom} />
+			</View>
+			* 
+or(var i=0;i<datatypes.length;i++) {
+		typeswitches+=(
+		<View style = {styles.filterRow}>
+			<View style = {styles.Whenbtn}>
+			  <Text>Errg</Text>
+			</View>
+		</View>
+		);
+	}
+			*/	
+				  
+typeim = (n) => {
+	return(
+		<View style = {styles.filterRow}>
+			<View style = {styles.Whenbtn}>
+			  <Text>Errg{n}</Text>
+			</View>
+		</View>
+	);
+}				  
+filterModalDlg() {
+	var typeswitches=[];
+	for(var i=0;i<datatypes.length;i++) {
+		typeswitches.push(this.typeim(i));
+	}
+	
+	return(
+	<Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.filterModalVisible}
+          >
+		<View style={styles.filterDlg}>
+			<View style = {styles.filterRow}>
+				<View style = {styles.Whenfirst}>
+				  <Switch onValueChange={this.toggleFilterEndDate} value={this.state.filter.useTo} />
+				</View>
+				<View style = {styles.Whenbtn}>
+				  <Text>No later than:</Text>
+				</View>							
+				<View style = {styles.Whenbtn}>
+				  <Button title={this.state.filter.to.toDateString()} />
+				</View>
+			</View>
+			<View style = {styles.filterRow}>
+				<View style = {styles.Whenfirst}>
+				  <Switch onValueChange={this.toggleFilterBeginDate} value={this.state.filter.useFrom} />
+				</View>
+				<View style = {styles.Whenbtn}>
+				  <Text>No earlier than:</Text>
+				</View>							
+				<View style = {styles.Whenbtn}>
+				  <Button title={this.state.filter.from.toDateString()} />
+				</View>
+			</View>
+			
+			<View style = {styles.filterRow}>
+				<View style = {styles.Whenbtn}>
+				  <Text>Types:</Text>
+				</View>
+				<FlatList
+					data={datatypes}
+					keyExtractor={(item, index) => index.toString()}
+					renderItem={({item,index}) => {
+					
+					
+					return (
+			   <View style={styles.filterRow}>
+			   <View style = {styles.Whenfirst}>
+				  <Switch onValueChange={(newvalue) => this.toggleFilterOnType(newvalue,index)} value={this.state.filter.useType[index]} />
+				</View>
+				<View style = {styles.Whenbtn}>
+				  <Text>{item.name}</Text>
+				</View>
+				</View>
+				);
+					}
+			  }
+					/>
+          	
+			</View>
+			<View style={styles.filterRow}>
+             <View style={styles.Savebtn}>
+              <Button onPress={() => {
+					this.doFiltering();
+                }} title="Filter" />
+               </View>
+             <View style={styles.Cancelbtn}>
+              <Button onPress={() => this.closeFilterDlg()} title="Cancel" />
+              </View>
+			</View>
+
+		</View>
+      </Modal>
+      );
+}
 	
   render() {
 	  
     const {navigate} = this.props.navigation;
     var navigationView = (
     <View style={{flex: 1, backgroundColor: '#fff' }}>
-		<View>
+		
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => this.openFilterDlg()}>
 		  <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>Filter by date and/or type</Text>
-		</View>
+		</TouchableOpacity>
 		<View>
 		  <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>Export to CSV file</Text>
 		</View>
@@ -142,6 +313,7 @@ toggleDrawer = () => {
 
     return (
       <View style={styles.container}>
+      {this.filterModalDlg()}
       <View style={styles.mubutton}>
       <Button title="Info" onPress={() => this.toggleDrawer()} />
       </View>
@@ -288,4 +460,23 @@ sureListItems: {
     height: 50,
     //backgroundColor:'black'
   },
+	Whenfirst: {
+		marginRight:10,
+		marginTop:4
+	},
+	Whenbtn: {
+		marginLeft:10,
+		marginTop:4
+	},
+	filterDlg: {
+		flexDirection:'column',
+		flex:1,
+		justifyContent:'center',
+		marginLeft:4,
+		marginRight:4
+	},
+	filterRow: {
+		flexDirection:'row',
+		justifyContent:'space-between'
+	},
 })

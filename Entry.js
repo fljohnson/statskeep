@@ -278,6 +278,8 @@ onNotesChange = (text) => {
 		  <Picker.Item label="Weight"  value="Weight"/>
 		</Picker>
 		</View>
+		{ this.state.stattype != "Food Log" && 
+			
 		<View>
 		<TextInput
       style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
@@ -286,6 +288,8 @@ onNotesChange = (text) => {
       keyboardType="decimal-pad"
 		/>
 		</View>
+		
+			}
 		</View>
 
 
@@ -304,6 +308,7 @@ onNotesChange = (text) => {
         }
         <View style={styles.Valrow}>
 			<TextInput
+				placeholder={"Notes"}
 				multiline
 				onChangeText={this.onNotesChange}
 				value={this.state.notes}
