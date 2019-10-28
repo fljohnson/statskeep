@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, Alert,Dimensions,Button,DrawerLayoutAndroid,Modal, Switch } from 'react-native';
 
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { openDatabase } from 'react-native-sqlite-storage';
 var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
 var datatypes = [
@@ -24,15 +25,17 @@ export class FlatListBasics extends Component {
 	state = {
 		editing: false,
 			goods: [],
-		filter: {
-			from:new Date(),
-			to:new Date(),
+		filter: { 
+			from:new Date((new Date()).toDateString()+" 00:00:00"),
+			to:new Date((new Date()).toDateString()+" 23:59:59"),
 			types:[],
 			useFrom:false,
 			useTo:false,
 			useType:[true,true,true]
 		},
-		filterModalVisible:false
+		filterModalVisible:false,
+		filterDateWhich:"",
+		filterDateValue:null
 		
 	  };
 	setEditing(visible) {
@@ -188,37 +191,49 @@ openFilterDlg = () => {
 	});
 }
 
-/*
- <View style = {styles.Whenfirst}>
-			  <Switch onValueChange={this.toggleFilterBeginDate} value={this.state.filter.useFrom} />
-			</View>
-			* 
-or(var i=0;i<datatypes.length;i++) {
-		typeswitches+=(
-		<View style = {styles.filterRow}>
-			<View style = {styles.Whenbtn}>
-			  <Text>Errg</Text>
-			</View>
-		</View>
-		);
+setFilterDate = (event,date) => {
+	if(date == null) {
+		
+		this.setState({
+			filterDateWhich:"",
+		});
+		return;
 	}
-			*/	
-				  
-typeim = (n) => {
-	return(
-		<View style = {styles.filterRow}>
-			<View style = {styles.Whenbtn}>
-			  <Text>Errg{n}</Text>
-			</View>
-		</View>
-	);
-}				  
-filterModalDlg() {
-	var typeswitches=[];
-	for(var i=0;i<datatypes.length;i++) {
-		typeswitches.push(this.typeim(i));
+	var nufilter = this.state.filter;
+	if(this.state.filterDateWhich == "from"){
+		nufilter.from = new Date(date.toDateString()+" 00:00:00");
+	}
+	if(this.state.filterDateWhich == "to"){
+		nufilter.to = new Date(date.toDateString()+" 23:59:59");
+	}
+	this.setState({
+			filterDateWhich:"",
+			filter:nufilter
+		});
+}
+
+editFilterDate = (which) => {
+	var val = null;
+	if(which == "from") {
+		val = this.state.filter.from;
+	}
+	if(which == "to") {
+		val = this.state.filter.to;
 	}
 	
+	this.setState({
+		filterDateWhich:which,
+		filterDateValue:val
+	});
+}
+datepicker = (which) => {
+    this.editFilterDate(which);
+  }
+  
+				  
+		
+		  
+filterModalDlg() {
 	return(
 	<Modal
           animationType="slide"
@@ -226,6 +241,11 @@ filterModalDlg() {
           visible={this.state.filterModalVisible}
           >
 		<View style={styles.filterDlg}>
+		{ (this.state.filterDateWhich != "")  && <DateTimePicker value={this.state.filterDateValue}
+                    mode={"date"}
+                    display="spinner"
+                    onChange={this.setFilterDate} />
+        }
 			<View style = {styles.filterRow}>
 				<View style = {styles.Whenfirst}>
 				  <Switch onValueChange={this.toggleFilterEndDate} value={this.state.filter.useTo} />
@@ -234,7 +254,7 @@ filterModalDlg() {
 				  <Text>No later than:</Text>
 				</View>							
 				<View style = {styles.Whenbtn}>
-				  <Button title={this.state.filter.to.toDateString()} />
+				  <Button onPress={()=> this.datepicker("to")} title={this.state.filter.to.toDateString()} />
 				</View>
 			</View>
 			<View style = {styles.filterRow}>
@@ -245,7 +265,7 @@ filterModalDlg() {
 				  <Text>No earlier than:</Text>
 				</View>							
 				<View style = {styles.Whenbtn}>
-				  <Button title={this.state.filter.from.toDateString()} />
+				  <Button onPress={()=> this.datepicker("from")} title={this.state.filter.from.toDateString()} />
 				</View>
 			</View>
 			
