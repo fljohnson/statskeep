@@ -63,10 +63,29 @@ clickHandler = () => {
 );
 
 do_fetch = (when_start,when_end,what_type) => {
+	var addlClauses=[];
+	var addlParms = [];
+	if(what_type != null) {
+		var tipostring = what_type.join();
+		addlClauses.push('statistic in ('+tipostring+')');
+	}
+	if(when_end != null) {
+		addlClauses.push('utc_timestamp <= ?');
+		addlParms.push(Math.floor(when_end.getTime()/1000));
+	}
+	if(when_start != null) {
+		addlClauses.push('utc_timestamp >= ?');
+		addlParms.push(Math.floor(when_start.getTime()/1000));
+	}
+	var augend = addlClauses.join(" and ");
+	if(augend.length > 2){
+		augend =" and "+augend;
+	}
+	
 	db.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM stats WHERE active=\'Y\' ORDER BY utc_timestamp',
-        [],
+        'SELECT * FROM stats WHERE active=\'Y\''+augend+' ORDER BY utc_timestamp',
+        addlParms,
         (tx, results) => {
           var len = results.rows.length;
           console.log('len',len);
@@ -175,6 +194,27 @@ toggleFilterEndDate = (newvalue) =>{
 doFiltering = () => {
 	console.log("Result:",this.state.filter);
 	this.closeFilterDlg();
+	var types=[];
+	for(var i=0;i<datatypes.length;i++)
+	{
+		if(this.state.filter.useType[i]) {
+			types.push("'"+datatypes[i].name+"'");
+		}
+	}
+	if(types.length == datatypes.length || types.length == 0)
+	{
+		types=null;
+	}
+	
+	var when_start = null;
+	var when_end = null;
+	if(this.state.filter.useFrom) {
+		when_start = this.state.filter.from;
+	}  
+	if(this.state.filter.useTo) {
+		when_end = this.state.filter.to;
+	}  
+	this.do_fetch(when_start,when_end,types);
 }
 
 closeFilterDlg = () => {
@@ -406,7 +446,9 @@ uri:'https://raw.githubusercontent.com/AboutReact/sampleresource/master/plus_ico
       
     );
   }
-}
+  
+};
+
 
 const styles = StyleSheet.create({
   container: {
@@ -499,4 +541,5 @@ sureListItems: {
 		flexDirection:'row',
 		justifyContent:'space-between'
 	},
-})
+}
+);
