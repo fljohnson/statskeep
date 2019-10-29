@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
-import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, Alert,Dimensions,Button,DrawerLayoutAndroid,Modal, Switch } from 'react-native';
+import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, TextInput, Alert,Dimensions,Button,DrawerLayoutAndroid,Modal, Switch } from 'react-native';
+
+import RNFS from 'react-native-fs';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { openDatabase } from 'react-native-sqlite-storage';
@@ -92,7 +94,14 @@ do_fetch = (when_start,when_end,what_type) => {
           console.log('len',len);
           if(len == 0)
           {
-			  this.setState({goods:[],export_goods:[]});
+			  if(this.state.forExport)
+			  {
+				  this.setState({export_goods:[],forExport:false});
+			  }
+			  else
+			  {
+				  this.setState({goods:[]});	
+			  }
 			  alert("No records found");
 			  return;
 		  }
@@ -100,7 +109,8 @@ do_fetch = (when_start,when_end,what_type) => {
 			for (let i = 0; i < results.rows.length; ++i) {
 			  temp.push(results.rows.item(i));
 			}
-			if(this.state.forExport) {				
+			if(this.state.forExport) {
+								
 			  this.setState({
 				  export_goods: temp
 			  });
@@ -130,7 +140,14 @@ constructor(props) {
           console.log('len',len);
           if(len == 0)
           {
-			  this.setState({goods:[],export_goods:[]});
+			  if(this.state.forExport)
+			  {
+				  this.setState({export_goods:[],forExport:false});
+			  }
+			  else
+			  {
+				  this.setState({goods:[]});	
+			  }
 			  alert("No records found");
 			  return;
 		  }
@@ -213,7 +230,7 @@ toggleFilterEndDate = (newvalue) =>{
 
 doFiltering = () => {
 	console.log("Result:",this.state.filter);
-	this.closeFilterDlg();
+	this.closeFilterDlg(true);
 	var types=[];
 	for(var i=0;i<datatypes.length;i++)
 	{
@@ -237,20 +254,95 @@ doFiltering = () => {
 	this.do_fetch(when_start,when_end,types);
 }
 
-closeFilterDlg = () => {
+closeFilterDlg = (goingForIt) => {
+	if(goingForIt && this.state.forExport) {
+		this.getExtantFiles();
+	}
 	this.setState({
-		filterModalVisible:false
+		filterModalVisible:false,
+		forExport:goingForIt && this.state.forExport
 	});
 }
 
-launchExporter = () => {
-	this.refs["thedrawer"].closeDrawer();
-	this.setState({
-		drawerOpen:false,
-	});
-	this.props.navigation.push('Export');
-	console.log("hit");
+saveCSV = () => {
+	console.log("dosave",this.state.export_goods);
+	this.closeExportDlg();
 } 
+
+closeExportDlg = () => {
+	this.setState({
+		export_goods:[],
+		forExport:false
+	});
+}
+
+getExtantFiles() {
+// get a list of files and directories in the main bundle
+RNFS.readDir(RNFS.DocumentDirectoryPath) // On Android, use "RNFS.DocumentDirectoryPath" (MainBundlePath is not defined)
+  .then((result) => {
+    console.log('GOT RESULT', result);
+
+    // stat the first file
+    return Promise.all([RNFS.stat(result[0].path), result[0].path]);
+  })
+  .then((statResult) => {
+    this.setState({
+		extant_files:statResult
+	});
+  })
+  .catch((err) => {
+	 Alert.alert("Directory-reading flub",err.message);
+    console.log(err.message, err.code);
+  });
+
+}
+saveExportDlg() {
+	//need a list of all stuff in DocumentDirectory
+	return(
+	<Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.forExport && this.state.export_goods.length > 0}
+          >
+		<View style={styles.filterDlg}>
+		 <View style={styles.Valrow}>
+			<TextInput
+				placeholder={"Filename.csv"}
+				onChangeText={this.onFilenameChange}
+				value={this.state.filename}
+			  />
+		  </View>
+		  <FlatList
+					data={this.state.extant_files}
+					keyExtractor={(item, index) => index.toString()}
+					renderItem={({item,index}) => {
+					
+					
+					return (
+			   <View style={styles.filterRow}>
+				<Text>{item.path && item.path.replace(RNFS.DocumentDirectoryPath+"/","")}</Text>
+				</View>
+				);
+					}
+			  }
+					/>
+			
+			<View style={styles.filterRow}>
+             <View style={styles.Savebtn}>
+              <Button onPress={() => {
+					this.saveCSV();
+                }} title="Save" />
+               </View>
+             <View style={styles.Cancelbtn}>
+              <Button onPress={() => this.closeExportDlg()} title="Cancel" />
+              </View>
+			</View>
+
+		</View>
+      </Modal>
+      );
+}
+	
 openFilterDlg = (isExporting) => {
 	this.refs["thedrawer"].closeDrawer();
 	this.setState({
@@ -370,7 +462,7 @@ filterModalDlg() {
                 }} title="Filter" />
                </View>
              <View style={styles.Cancelbtn}>
-              <Button onPress={() => this.closeFilterDlg()} title="Cancel" />
+              <Button onPress={() => this.closeFilterDlg(false)} title="Cancel" />
               </View>
 			</View>
 
@@ -406,6 +498,7 @@ filterModalDlg() {
     return (
       <View style={styles.container}>
       {this.filterModalDlg()}
+      {this.saveExportDlg()}
       <View style={styles.mubutton}>
       <Button title="Info" onPress={() => this.toggleDrawer()} />
       </View>
