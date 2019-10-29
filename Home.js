@@ -25,6 +25,7 @@ export class FlatListBasics extends Component {
 	state = {
 		editing: false,
 			goods: [],
+			export_goods:[],
 		filter: { 
 			from:new Date((new Date()).toDateString()+" 00:00:00"),
 			to:new Date((new Date()).toDateString()+" 23:59:59"),
@@ -91,7 +92,7 @@ do_fetch = (when_start,when_end,what_type) => {
           console.log('len',len);
           if(len == 0)
           {
-			  this.setState({goods:[]});
+			  this.setState({goods:[],export_goods:[]});
 			  alert("No records found");
 			  return;
 		  }
@@ -99,9 +100,18 @@ do_fetch = (when_start,when_end,what_type) => {
 			for (let i = 0; i < results.rows.length; ++i) {
 			  temp.push(results.rows.item(i));
 			}
-		  this.setState({
-			  goods: temp
-		  });
+			if(this.state.forExport) {				
+			  this.setState({
+				  export_goods: temp
+			  });
+			  //now, we need a freakin' Save Dialog
+			}
+			else
+			{
+			  this.setState({
+				  goods: temp
+			  });
+			}
 	  }
 	  );
 	  });
@@ -120,7 +130,7 @@ constructor(props) {
           console.log('len',len);
           if(len == 0)
           {
-			  this.setState({goods:[]});
+			  this.setState({goods:[],export_goods:[]});
 			  alert("No records found");
 			  return;
 		  }
@@ -128,11 +138,21 @@ constructor(props) {
 			for (let i = 0; i < results.rows.length; ++i) {
 			  temp.push(results.rows.item(i));
 			}
-			this.state = {
-				editing: false,
-					goods: temp
+			if(this.state.forExport) {
 				
-			  };
+				this.state = {
+					editing: false,
+						export_goods: temp
+					
+				  };
+			}
+			else {
+				this.state = {
+					editing: false,
+						goods: temp
+					
+				  };
+			}
 	  }
 	  );
 	  });	
@@ -223,11 +243,20 @@ closeFilterDlg = () => {
 	});
 }
 
-openFilterDlg = () => {
+launchExporter = () => {
 	this.refs["thedrawer"].closeDrawer();
 	this.setState({
 		drawerOpen:false,
-		filterModalVisible:true
+	});
+	this.props.navigation.push('Export');
+	console.log("hit");
+} 
+openFilterDlg = (isExporting) => {
+	this.refs["thedrawer"].closeDrawer();
+	this.setState({
+		drawerOpen:false,
+		filterModalVisible:true,
+		forExport:isExporting
 	});
 }
 
@@ -358,12 +387,15 @@ filterModalDlg() {
 		
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={() => this.openFilterDlg()}>
+          onPress={() => this.openFilterDlg(false)}>
 		  <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>Filter by date and/or type</Text>
 		</TouchableOpacity>
-		<View>
+		
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => this.openFilterDlg(true)}>
 		  <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>Export to CSV file</Text>
-		</View>
+		</TouchableOpacity>
     </View>
   );
      /*
