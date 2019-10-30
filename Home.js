@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, TextInput, Alert,Dimensions,Button,DrawerLayoutAndroid,Modal, Switch } from 'react-native';
-
-import RNFS from 'react-native-fs';
+import {PermissionsAndroid} from 'react-native';
+import RNFetchBlob from 'rn-fetch-blob'
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { openDatabase } from 'react-native-sqlite-storage';
+var CorrectPath = "";
 var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
 var datatypes = [
 	{
@@ -20,6 +21,30 @@ var datatypes = [
 		decimal_places:1
 	},
 ];
+
+async function diskJockeying() {
+	CorrectPath=RNFetchBlob.fs.dirs.DownloadDir; //on iOS, RNFetchBlob.dirs.DocumentDir
+	  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      {
+        title: 'Cool Photo App Camera Permission',
+        message:
+          'Cool Photo App needs access to your Downloads folder.',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK',
+      },
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('You can use the camera');
+    } else {
+      console.log('Camera permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+}
 
 export class FlatListBasics extends Component {
 		
@@ -129,8 +154,10 @@ do_fetch = (when_start,when_end,what_type) => {
 	
 }
 
+
 constructor(props) {
 	super(props);
+	diskJockeying();
   db.transaction(tx => {
       tx.executeSql(
         'SELECT * FROM stats WHERE active=\'Y\' ORDER BY utc_timestamp',
@@ -277,23 +304,19 @@ closeExportDlg = () => {
 }
 
 getExtantFiles() {
-// get a list of files and directories in the main bundle
-RNFS.readDir(RNFS.DocumentDirectoryPath) // On Android, use "RNFS.DocumentDirectoryPath" (MainBundlePath is not defined)
-  .then((result) => {
-    console.log('GOT RESULT', result);
-
-    // stat the first file
-    return Promise.all([RNFS.stat(result[0].path), result[0].path]);
-  })
-  .then((statResult) => {
-    this.setState({
-		extant_files:statResult
+	
+	RNFetchBlob.fs.ls(CorrectPath)
+    // files will an array contains filenames
+    .then((files) => {
+        this.setState({
+			extant_files:files
+		});
+        
+    })
+    .catch((err) => {
+		console.log("FAIL!",err);
 	});
-  })
-  .catch((err) => {
-	 Alert.alert("Directory-reading flub",err.message);
-    console.log(err.message, err.code);
-  });
+	
 
 }
 saveExportDlg() {
@@ -320,7 +343,7 @@ saveExportDlg() {
 					
 					return (
 			   <View style={styles.filterRow}>
-				<Text>{item.path && item.path.replace(RNFS.DocumentDirectoryPath+"/","")}</Text>
+				<Text>{item}</Text>
 				</View>
 				);
 					}
