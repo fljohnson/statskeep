@@ -158,6 +158,8 @@ do_fetch = (when_start,when_end,what_type) => {
 constructor(props) {
 	super(props);
 	diskJockeying();
+	this.state.forExport = false;
+	this.state.filename ="";
   db.transaction(tx => {
       tx.executeSql(
         'SELECT * FROM stats WHERE active=\'Y\' ORDER BY utc_timestamp',
@@ -292,9 +294,34 @@ closeFilterDlg = (goingForIt) => {
 }
 
 saveCSV = () => {
-	console.log("dosave",this.state.export_goods);
-	this.closeExportDlg();
-} 
+	var suspect = this.state.filename.trim();
+	if(!suspect.toLowerCase().endsWith(".csv")){
+		suspect+=".csv";
+	}
+	if(this.state.extant_files.indexOf(suspect) > -1)
+	{
+		//TODO:find out how to place Yes and No buttons
+		//Yes=save "fork"
+		//No = this.closeExportDlg();
+		Alert.alert("File exists",
+		"There is already a file named \""+suspect+"\". Overwrite this file?"
+		);
+	}
+	else
+	{		console.log("save as",suspect);
+		console.log("dosave",this.state.export_goods);
+		this.closeExportDlg();
+	}
+/*
+ 
+		//do the save fork:
+		console.log("save as",this.state.filename);
+		console.log("dosave",this.state.export_goods);
+		*/
+		console.log("whoops");
+		this.closeExportDlg();
+	}
+
 
 closeExportDlg = () => {
 	this.setState({
@@ -319,18 +346,24 @@ getExtantFiles() {
 	
 
 }
+
+onFilenameChange = (text) => {
+	var suspect = text.trim();
+	this.setState({filename: suspect})
+}
+
 saveExportDlg() {
 	//need a list of all stuff in DocumentDirectory
 	return(
 	<Modal
           animationType="slide"
           transparent={false}
-          visible={this.state.forExport && this.state.export_goods.length > 0}
+          visible={this.state.forExport && (this.state.export_goods.length > 0)}
           >
 		<View style={styles.filterDlg}>
 		 <View style={styles.Valrow}>
 			<TextInput
-				placeholder={"Filename.csv"}
+				placeholder={"filename.csv"}
 				onChangeText={this.onFilenameChange}
 				value={this.state.filename}
 			  />
@@ -354,7 +387,9 @@ saveExportDlg() {
              <View style={styles.Savebtn}>
               <Button onPress={() => {
 					this.saveCSV();
-                }} title="Save" />
+                }} 
+                disabled={this.state.filename.trim() == ""}
+                title="Save" />
                </View>
              <View style={styles.Cancelbtn}>
               <Button onPress={() => this.closeExportDlg()} title="Cancel" />
