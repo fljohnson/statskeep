@@ -26,7 +26,7 @@ async function diskJockeying() {
 	CorrectPath=RNFetchBlob.fs.dirs.DownloadDir; //on iOS, RNFetchBlob.dirs.DocumentDir
 	  try {
     const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
       {
         title: 'Cool Photo App Camera Permission',
         message:
@@ -320,10 +320,34 @@ saveCSV = () => {
 	}
 }
 actualSave(filename) {
-	console.log("save as",filename);
+	console.log("save as",CorrectPath+"/"+filename);
 		console.log("dosave",this.state.export_goods);
-		
+		var kiddingme="";	
+		for(var i=0;i<this.state.export_goods.length;i++){
+		kiddingme+=(makeCSVRow(this.state.export_goods[i])+"\r\n");
+	}
+		RNFetchBlob.fs.writeStream(
+    CorrectPath+"/"+filename,
+    // encoding, should be one of `base64`, `utf8`, `ascii`
+    'utf8',
+    // should data append to existing content ?
+    false
+)
+.then(stream => Promise.all([
+    stream.write('"When","What","Value","Notes"'+"\r\n"),
+    stream.write(kiddingme)
+    ]
+))
+// Use array destructuring to get the stream object from the first item of the array we get from Promise.all()
+.then(([stream]) => {
+	stream.close();
+	this.closeExportDlg();
+	})
+.catch(err => {
 		this.closeExportDlg();
+		console.log("bombed out:",err);
+	})
+		
 	}
 
 closeExportDlg = () => {
@@ -729,3 +753,38 @@ sureListItems: {
 	},
 }
 );
+
+function makeCSVRow(dbItem) {
+	 var whatday = new Date(dbItem.utc_timestamp*1000);
+			 
+	  var localhrs = whatday.getHours();
+	  var meridiem = " AM";
+	  if(localhrs >= 12) {
+		  meridiem = " PM";
+	  }
+	  if(localhrs > 12) {
+		  localhrs = localhrs - 12;
+	  }
+	  var options = {
+		  hour: '2-digit',
+		  minute: '2-digit',
+		  hour12: true
+		};
+		var timeString = ("0"+localhrs).substr(-2, 2)+":"+("0"+whatday.getMinutes()).substr(-2, 2)+meridiem;
+	  var friendly = whatday.toLocaleDateString()+" "+timeString;
+	var rv=["\""+friendly+"\""];		  
+	var what = dbItem.statistic.replace('"','""');
+	var val = dbItem.val;
+	if(what == "Food Log") {
+		val="";
+	}
+	var notes = "";
+	if(dbItem.notes != null) {
+		notes = dbItem.notes.replace('"','""');
+	}
+	
+	rv.push("\""+what+"\"");
+	rv.push("\""+val+"\"");
+	rv.push("\""+notes+"\"");
+	return rv.join();
+}
