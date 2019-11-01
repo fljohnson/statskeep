@@ -304,24 +304,27 @@ saveCSV = () => {
 		//Yes=save "fork"
 		//No = this.closeExportDlg();
 		Alert.alert("File exists",
-		"There is already a file named \""+suspect+"\". Overwrite this file?"
+		"There is already a file named \""+suspect+"\". Overwrite this file?",
+		[
+		{
+      text: 'No',
+      onPress: () => {},
+    },
+    {text: 'Yes', onPress: () => this.actualSave(suspect)},
+		]
 		);
 	}
 	else
-	{		console.log("save as",suspect);
+	{	
+		this.actualSave(suspect);	
+	}
+}
+actualSave(filename) {
+	console.log("save as",filename);
 		console.log("dosave",this.state.export_goods);
+		
 		this.closeExportDlg();
 	}
-/*
- 
-		//do the save fork:
-		console.log("save as",this.state.filename);
-		console.log("dosave",this.state.export_goods);
-		*/
-		console.log("whoops");
-		this.closeExportDlg();
-	}
-
 
 closeExportDlg = () => {
 	this.setState({
