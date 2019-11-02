@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, TextInput, Alert,Dimensions,Button,DrawerLayoutAndroid,Modal, Switch } from 'react-native';
 import {PermissionsAndroid} from 'react-native';
-import RNFetchBlob from 'rn-fetch-blob'
-
+import RNFetchBlob from 'rn-fetch-blob';
+import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { openDatabase } from 'react-native-sqlite-storage';
 var CorrectPath = "";
@@ -49,6 +49,8 @@ async function diskJockeying() {
 export class FlatListBasics extends Component {
 		
 	key = -1; //this will actually come from one of the list rows
+	menuIcon = "md-menu";
+	addIcon = "md-add";
 	state = {
 		editing: false,
 			goods: [],
@@ -72,17 +74,12 @@ export class FlatListBasics extends Component {
 	  onDoneEditing = () => {
 		  this.setEditing(false);
 	  };
-clickHandler = () => {
-    //function to handle click on floating Action Button
-    //Alert.alert('Floating Button Clicked');
-    this.key ++;
-   this.setEditing(true);
-  };
+
   
   static navigationOptions = {
     title: 'Stats',
   };
-  
+  //this makes "all" visible when this page becomes visible 
   didBlurSubscription = this.props.navigation.addListener(
   'willFocus',
   payload => {
@@ -387,6 +384,7 @@ saveExportDlg() {
           transparent={false}
           visible={this.state.forExport && (this.state.export_goods.length > 0)}
           >
+          <Text style={styles.dlHeader}>Downloads folder</Text>
 		<View style={styles.filterDlg}>
 		 <View style={styles.Valrow}>
 			<TextInput
@@ -577,7 +575,7 @@ filterModalDlg() {
   );
      /*
         Special thanks to Snehal Agarwal (https://aboutreact.com/react-native-floating-action-button/)
-        for cutting through the crazy-talk and non-functional code regarding the Floating Action Button 
+        for cutting through the online crazy-talk and no-longer-functional code regarding the Floating Action Button 
         */
 
     return (
@@ -585,7 +583,9 @@ filterModalDlg() {
       {this.filterModalDlg()}
       {this.saveExportDlg()}
       <View style={styles.mubutton}>
-      <Button title="Info" onPress={() => this.toggleDrawer()} />
+      <TouchableOpacity onPress={()=> this.toggleDrawer()} >
+      <Icon size={30} name={this.menuIcon} />
+      </TouchableOpacity>
       </View>
       
     <DrawerLayoutAndroid
@@ -639,16 +639,7 @@ filterModalDlg() {
           activeOpacity={0.7}
           onPress={() => this.props.navigation.push('Line', {keya: -1})}
           style={styles.TouchableOpacityStyle}>
-          <Image
-            //We are making FAB using TouchableOpacity with an image
-            //We are using online image here
-             source={{
-uri:'https://raw.githubusercontent.com/AboutReact/sampleresource/master/plus_icon.png',
-            }}
-            //You can use you project image Example below
-            //source={require('./images/float-add-icon.png')}
-            style={styles.FloatingButtonStyle}
-          />
+          <Icon size={30} name={this.addIcon} style={styles.FloatingButtonStyle} />
         </TouchableOpacity>
         
     </DrawerLayoutAndroid>
@@ -713,7 +704,8 @@ sureListItems: {
 	  marginTop:9,
 },
   mubutton: {
-	  width:54
+	  width:54,
+	  marginLeft:10
   }
   ,
   TouchableOpacityStyle: {
@@ -730,7 +722,11 @@ sureListItems: {
     resizeMode: 'contain',
     width: 50,
     height: 50,
-    //backgroundColor:'black'
+    borderRadius:25,
+    paddingLeft:15,
+    paddingTop:10,
+    color:'white',
+    backgroundColor:'#2196F3'
   },
 	Whenfirst: {
 		marginRight:10,
@@ -751,6 +747,9 @@ sureListItems: {
 		flexDirection:'row',
 		justifyContent:'space-between'
 	},
+	dlHeader:{
+		fontSize:20
+	}
 }
 );
 
