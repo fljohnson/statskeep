@@ -1,5 +1,5 @@
 {
-  "name": "lemon",
+  "name": "statskeep",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -12,20 +12,20 @@
   "dependencies": {
     "@react-native-community/datetimepicker": "^2.1.0",
     "react": "16.9.0",
-    "react-native": "0.61.2",
-    "react-native-datepicker": "^1.7.2",
-    "react-native-floating-action": "^1.19.1",
-    "react-native-gesture-handler": "^1.4.1",
+    "react-native": "0.61.3",
+    "react-native-gesture-handler": "^1.5.0",
     "react-native-sqlite-storage": "^4.1.0",
+    "react-native-vector-icons": "^6.6.0",
     "react-navigation": "^4.0.10",
-    "react-navigation-stack": "^1.10.2"
+    "react-navigation-stack": "^1.10.3",
+    "rn-fetch-blob": "^0.11.2"
   },
   "devDependencies": {
     "@babel/core": "7.6.4",
     "@babel/runtime": "7.6.3",
     "@react-native-community/eslint-config": "0.0.3",
     "babel-jest": "24.9.0",
-    "eslint": "6.5.1",
+    "eslint": "6.6.0",
     "jest": "24.9.0",
     "metro-react-native-babel-preset": "0.51.1",
     "react-test-renderer": "16.9.0"
