@@ -22,7 +22,7 @@ var datatypes = [
 		decimal_places:1
 	},
 ];
-
+var us; //singleton the hard way
 async function diskJockeying() {
 	CorrectPath=RNFetchBlob.fs.dirs.DownloadDir; //on iOS, RNFetchBlob.dirs.DocumentDir
 	  try {
@@ -45,6 +45,19 @@ async function diskJockeying() {
   } catch (err) {
     console.warn(err);
   }
+}
+
+function handleActionBarBtn(posn){
+	if(posn === 0){
+		if(us != null) {
+			us.openFilterDlg(false);
+		}
+	}
+	if(posn === 1){
+		if(us != null) {
+			us.openFilterDlg(true);
+		}
+	}
 }
 
 export class FlatListBasics extends Component {
@@ -81,17 +94,17 @@ export class FlatListBasics extends Component {
     title: 'Stats',
     headerRight: () => (
     <View style={styles.toolbar}>
-      <Button 
-        onPress={() => alert('This is a button!')}
-        title="Info"
-      />
-      <Button 
-        onPress={() => alert('So is this!')} 
-        title="Info2"
-      />
-      <Button
-      title=" " 
-      />
+    <View style={styles.tbActionWrap}>
+    <TouchableOpacity onPress={() => handleActionBarBtn(0)}>
+      <Text style={styles.tbaction}>FILTER</Text>
+    </TouchableOpacity>
+    </View>
+    
+    <View style={styles.tbActionWrap}>
+    <TouchableOpacity onPress={() => handleActionBarBtn(1)}>  
+      <Text style={styles.tbaction}>EXPORT</Text>
+      </TouchableOpacity>
+      </View>
     </View>
     )
   };
@@ -171,6 +184,7 @@ do_fetch = (when_start,when_end,what_type) => {
 constructor(props) {
 	super(props);
 	diskJockeying();
+	us = this;
 	this.state.forExport = false;
 	this.state.filename ="";
   db.transaction(tx => {
@@ -233,13 +247,13 @@ constructor(props) {
 	
 toggleDrawer = () => {
 	if(!this.state.drawerOpen) {
-		this.refs["thedrawer"].openDrawer();
+		//this.refs["thedrawer"].openDrawer();
 		this.setState({
 			drawerOpen:true
 		});
 	}
 	else{
-		this.refs["thedrawer"].closeDrawer();
+		//this.refs["thedrawer"].closeDrawer();
 		this.setState({
 			drawerOpen:false
 		});
@@ -443,7 +457,7 @@ saveExportDlg() {
 }
 	
 openFilterDlg = (isExporting) => {
-	this.refs["thedrawer"].closeDrawer();
+	//this.refs["thedrawer"].closeDrawer();
 	this.setState({
 		drawerOpen:false,
 		filterModalVisible:true,
@@ -756,12 +770,21 @@ sureListItems: {
 		fontSize:20
 	},
 	 toolbar: {
-    backgroundColor: '#db4b3f',
     height: 36,
+    marginRight:44,
    flexDirection: 'row',
-   justifyContent:'center',
+   justifyContent:'flex-end',
    
   },
+  tbActionWrap: {
+	  height:36,
+	  width:54,
+	  paddingTop:9
+  },
+  tbaction:{
+	textAlignVertical:'center',
+	  color:"#000",
+  }
 }
 );
 
