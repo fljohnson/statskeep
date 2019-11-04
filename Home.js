@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, TextInput, Alert,Dimensions,Button,Modal, Switch } from 'react-native';
+import {Platform} from 'react-native';
 import {PermissionsAndroid} from 'react-native';
 
 import RNFetchBlob from 'rn-fetch-blob';
@@ -8,6 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { openDatabase } from 'react-native-sqlite-storage';
 var CorrectPath = "";
 var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
+
 var datatypes = [
 	{
 		name:"Blood Glucose",
@@ -24,7 +26,13 @@ var datatypes = [
 ];
 var us; //singleton the hard way
 async function diskJockeying() {
-	CorrectPath=RNFetchBlob.fs.dirs.DownloadDir; //on iOS, RNFetchBlob.dirs.DocumentDir
+	if(Platform.OS == 'ios') {
+		CorrectPath=RNFetchBlob.fs.dirs.DocumentDir;
+		return; //for the moment; need to find out what user-granted permissions exist there
+	}
+	if(Platform.OS == 'android') {
+		CorrectPath=RNFetchBlob.fs.dirs.DownloadDir;
+	}
 	  try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -63,8 +71,8 @@ function handleActionBarBtn(posn){
 export class FlatListBasics extends Component {
 		
 	key = -1; //this will actually come from one of the list rows
-	menuIcon = "md-menu";
-	addIcon = "md-add";
+	menuIcon = Platform.OS === 'ios' ? "ios-menu":"md-menu";
+	addIcon =  Platform.OS === 'ios' ? "ios-add":"md-add";
 	state = {
 		editing: false,
 			goods: [],
@@ -90,24 +98,43 @@ export class FlatListBasics extends Component {
 	  };
 
   
-  static navigationOptions = {
-    title: 'Stats',
-    headerRight: () => (
-    <View style={styles.toolbar}>
-    <View style={styles.tbActionWrap}>
-    <TouchableOpacity onPress={() => handleActionBarBtn(0)}>
-      <Text style={styles.tbaction}>FILTER</Text>
-    </TouchableOpacity>
-    </View>
-    
-    <View style={styles.tbActionWrap}>
-    <TouchableOpacity onPress={() => handleActionBarBtn(1)}>  
-      <Text style={styles.tbaction}>EXPORT</Text>
-      </TouchableOpacity>
-      </View>
-    </View>
-    )
-  };
+  static navigationOptions = Platform.select({
+		android: {
+			
+				title: 'Stats',
+				headerRight: () => (
+						<View style={styles.toolbar}>
+						<View style={styles.tbActionWrap}>
+						<TouchableOpacity onPress={() => handleActionBarBtn(0)}>
+						  <Text style={styles.tbaction}>FILTER</Text>
+						</TouchableOpacity>
+						</View>
+						
+						<View style={styles.tbActionWrap}>
+						<TouchableOpacity onPress={() => handleActionBarBtn(1)}>  
+						  <Text style={styles.tbaction}>EXPORT</Text>
+						  </TouchableOpacity>
+						  </View>
+						</View>
+						)		
+			  
+		},
+		ios: {
+			title: 'Stats',
+			headerRight: () => (
+						
+			<TouchableOpacity
+			  activeOpacity={0.7}
+			  onPress={() => this.props.navigation.push('Line', {keya: -1})}
+			  style={styles.TouchableOpacityStyle}>
+			  <Icon size={30} name={this.addIcon} />
+			</TouchableOpacity>
+			
+			)
+		}
+	})
+  
+  ;
   //this makes "all" visible when this page becomes visible 
   didBlurSubscription = this.props.navigation.addListener(
   'willFocus',
