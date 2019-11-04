@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, TextInput, Alert,Dimensions,Button,DrawerLayoutAndroid,Modal, Switch } from 'react-native';
+import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, TextInput, Alert,Dimensions,Button,Modal, Switch } from 'react-native';
 import {PermissionsAndroid} from 'react-native';
+
 import RNFetchBlob from 'rn-fetch-blob';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -28,18 +29,18 @@ async function diskJockeying() {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
       {
-        title: 'Cool Photo App Camera Permission',
+        title: 'Statskeep External Storage Write Permission',
         message:
-          'Cool Photo App needs access to your Downloads folder.',
+          'Statskeep needs to be able to write to your Downloads folder.',
         buttonNeutral: 'Ask Me Later',
         buttonNegative: 'Cancel',
         buttonPositive: 'OK',
       },
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('You can use the camera');
+      console.log('You can use the Downloads folder');
     } else {
-      console.log('Camera permission denied');
+      console.log('Downloads folder permission denied');
     }
   } catch (err) {
     console.warn(err);
@@ -78,6 +79,21 @@ export class FlatListBasics extends Component {
   
   static navigationOptions = {
     title: 'Stats',
+    headerRight: () => (
+    <View style={styles.toolbar}>
+      <Button 
+        onPress={() => alert('This is a button!')}
+        title="Info"
+      />
+      <Button 
+        onPress={() => alert('So is this!')} 
+        title="Info2"
+      />
+      <Button
+      title=" " 
+      />
+    </View>
+    )
   };
   //this makes "all" visible when this page becomes visible 
   didBlurSubscription = this.props.navigation.addListener(
@@ -553,27 +569,27 @@ filterModalDlg() {
       </Modal>
       );
 }
-	
+	onToolbarActionSelected = (position) => {
+	  if (position === 0) { // index of 'Filter'
+		this.openFilterDlg(false);
+	  }
+	if (position === 1) { // index of 'Export'
+		this.openFilterDlg(true);
+	  }  
+	}
+
   render() {
 	  
     const {navigate} = this.props.navigation;
-    var navigationView = (
-    <View style={{flex: 1, backgroundColor: '#fff' }}>
-		
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => this.openFilterDlg(false)}>
-		  <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>Filter by date and/or type</Text>
-		</TouchableOpacity>
-		
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => this.openFilterDlg(true)}>
-		  <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>Export to CSV file</Text>
-		</TouchableOpacity>
-    </View>
-  );
+    
+    
      /*
+      * 
+      * 
+      actions={[{title: 'Filter',  show: 'always'},{title: 'Export',  show: 'always'}]}
+      onToolbarActionSelected={this.onToolbarActionSelected}
+      * 
+      * 
         Special thanks to Snehal Agarwal (https://aboutreact.com/react-native-floating-action-button/)
         for cutting through the online crazy-talk and no-longer-functional code regarding the Floating Action Button 
         */
@@ -582,17 +598,8 @@ filterModalDlg() {
       <View style={styles.container}>
       {this.filterModalDlg()}
       {this.saveExportDlg()}
-      <View style={styles.mubutton}>
-      <TouchableOpacity onPress={()=> this.toggleDrawer()} >
-      <Icon size={30} name={this.menuIcon} />
-      </TouchableOpacity>
-      </View>
       
-    <DrawerLayoutAndroid
-    ref={"thedrawer"}
-      drawerWidth={200}
-      drawerPosition={"left"}
-      renderNavigationView={() => navigationView}>
+          
         <FlatList
           data={this.state.goods}
           keyExtractor={(item, index) => item.id.toString()}
@@ -642,7 +649,6 @@ filterModalDlg() {
           <Icon size={30} name={this.addIcon} style={styles.FloatingButtonStyle} />
         </TouchableOpacity>
         
-    </DrawerLayoutAndroid>
       </View>
       
     );
@@ -719,7 +725,6 @@ sureListItems: {
   },
  
   FloatingButtonStyle: {
-    resizeMode: 'contain',
     width: 50,
     height: 50,
     borderRadius:25,
@@ -749,7 +754,14 @@ sureListItems: {
 	},
 	dlHeader:{
 		fontSize:20
-	}
+	},
+	 toolbar: {
+    backgroundColor: '#db4b3f',
+    height: 36,
+   flexDirection: 'row',
+   justifyContent:'center',
+   
+  },
 }
 );
 
