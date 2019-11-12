@@ -120,14 +120,14 @@ export class FlatListBasics extends Component {
 			  
 		},
 		ios: {
-			title: 'Stats',
+			headerTitle: 'Stats',
 			headerRight: () => (
 						
 			<TouchableOpacity
 			  activeOpacity={0.7}
-			  onPress={() => this.props.navigation.push('Line', {keya: -1})}
-			  style={styles.TouchableOpacityStyle}>
-			  <Icon size={30} name={this.addIcon} />
+			  onPress={() => us.props.navigation.push('Line', {keya: -1})}
+			  style={styles.iOSNav}>
+			  <Icon size={30} name={us.addIcon}   />
 			</TouchableOpacity>
 			
 			)
@@ -683,12 +683,14 @@ filterModalDlg() {
 			  }
 			  }
         />
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => this.props.navigation.push('Line', {keya: -1})}
-          style={styles.TouchableOpacityStyle}>
-          <Icon size={30} name={this.addIcon} style={styles.FloatingButtonStyle} />
-        </TouchableOpacity>
+        { Platform.OS =="android" && 
+			<TouchableOpacity
+			  activeOpacity={0.7}
+			  onPress={() => this.props.navigation.push('Line', {keya: -1})}
+			  style={styles.TouchableOpacityStyle}>
+			  <Icon size={30} name={this.addIcon} style={styles.FloatingButtonStyle} />
+			</TouchableOpacity>
+		}
         
       </View>
       
@@ -764,7 +766,15 @@ sureListItems: {
     right: 30,
     bottom: 30,
   },
- 
+ iOSNav: {
+	 width: 40,
+	 height:40,
+ },
+ iOSNavBtnChild: {
+	 color:'blue',
+	 width:40,
+	 height:40,
+ },
   FloatingButtonStyle: {
     width: 50,
     height: 50,
