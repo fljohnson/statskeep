@@ -35,12 +35,6 @@ target 'statskeep' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
-  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
-
-  pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
-
-  pod 'rn-fetch-blob', :path => '../node_modules/rn-fetch-blob'
-
   target 'statskeepTests' do
     inherit! :search_paths
     # Pods for testing

@@ -56,12 +56,6 @@ export class Entry extends Component {
   timepicker = () => {
     this.show('time');
   }
-  
-  closeIOSDateTimePicker = () => {
-	  this.setState({
-		  show: false,
-	  });
-  }
 
  didBlurSubscription = this.props.navigation.addListener(
   'willFocus',
@@ -264,35 +258,10 @@ onNotesChange = (text) => {
 		);
 	}
   }
-  
-  temporalPicker = () => {
-	  return Platform.select({
-		  android: 
-			  <DateTimePicker value={this.state.statdate}
-                    mode={this.state.mode}
-                    is24Hour={false}
-                    display="default"
-                    onChange={this.setDate} />
-		  ,
-		  ios: 
-			  <View style={styles.iOSBackground}>
-			  <DateTimePicker value={this.state.statdate}
-                    mode={this.state.mode}
-                    is24Hour={false}
-                    display="default"
-                    onChange={this.setDate} />
-                    <View style = {styles.Whenbtn}>
-					   <Button title="Done" onPress={this.closeIOSDateTimePicker}/>
-					</View>
-               </View>
-		  
-	  });
-  }
   render() {
 	  
     //const {navigate} = this.props.navigation;
 
-	
     return (
         
           <View style={styles.EntryDlg}>
@@ -313,7 +282,7 @@ onNotesChange = (text) => {
 			
 		<View>
 		<TextInput
-      style={{ height: 40, width:60, borderColor: 'gray', borderWidth: 1 }}
+      style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
       onChangeText={this.onValChange}
       value={this.state.statvalue}
       keyboardType="decimal-pad"
@@ -331,7 +300,12 @@ onNotesChange = (text) => {
           <Button onPress={this.timepicker} title={this.state.statdate.toTimeString()} />
         </View>
         
-        { this.state.show && temporalPicker() }
+        { this.state.show && <DateTimePicker value={this.state.statdate}
+                    mode={this.state.mode}
+                    is24Hour={false}
+                    display="default"
+                    onChange={this.setDate} />
+        }
         <View style={styles.Valrow}>
 			<TextInput
 				placeholder={"Notes"}
@@ -389,9 +363,6 @@ const styles = StyleSheet.create({
 	HistoryBtn: {
 	  marginTop:9,
 	},
-	iOSBackground: {
-		backgroundColor:'white'
-	}
 });
 
 
