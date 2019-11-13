@@ -3,6 +3,7 @@ import {Modal, Text, TouchableHighlight, View, Button, Alert,Picker,TextInput,St
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { openDatabase } from 'react-native-sqlite-storage';
+import {TouchableWithoutFeedback,Keyboard} from 'react-native';
 var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
 export class Entry extends Component {
   //TODO: add user-friendly date and time to this state
@@ -34,7 +35,7 @@ export class Entry extends Component {
 	}
 	date = new Date(put);
     this.initDate = date
-//TODO:set user-friendly date and time in this setState()
+
     this.setState({
       show: Platform.OS === 'ios' ? true : false,
       statdate:date,
@@ -296,6 +297,11 @@ onNotesChange = (text) => {
     return (
         
           <View style={styles.EntryDlg}>
+          <TouchableWithoutFeedback onPress={() => {
+					  console.log("BOO");
+					  Keyboard.dismiss();
+				  }
+			  }>
             <View>
             
 			<View style = {styles.Valrow}>
@@ -316,7 +322,7 @@ onNotesChange = (text) => {
       style={{ height: 40, width:60, borderColor: 'gray', borderWidth: 1 }}
       onChangeText={this.onValChange}
       value={this.state.statvalue}
-      keyboardType="decimal-pad"
+      keyboardType="decimal-pad" 
 		/>
 		</View>
 		
@@ -354,6 +360,7 @@ onNotesChange = (text) => {
               </View>
 			</View>
             </View>
+            </TouchableWithoutFeedback>
           </View>
     );
   }
