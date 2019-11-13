@@ -3,7 +3,7 @@ import {Modal, Text, TouchableHighlight, View, Button, Alert,Picker,TextInput,St
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { openDatabase } from 'react-native-sqlite-storage';
-import {TouchableWithoutFeedback,Keyboard} from 'react-native';
+import {ActionSheetIOS,TouchableWithoutFeedback,Keyboard} from 'react-native';
 var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
 var statisticTypes = ["Blood Glucose","Food Log","Weight"];
 
