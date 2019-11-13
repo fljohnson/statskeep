@@ -266,6 +266,49 @@ onNotesChange = (text) => {
 	}
   }
   
+  typePicker = () => {
+	  return Platform.select({
+		  android:
+			<Picker
+			  selectedValue={this.state.stattype}
+			  style={{height: 50, width: 170}}
+			  onValueChange={this.onTypeChange}>
+			  <Picker.Item label="Blood Glucose" value="Blood Glucose"/>
+			  <Picker.Item label="Food Log" value="Food Log"/>
+			  <Picker.Item label="Weight"  value="Weight"/>
+			</Picker>
+			,
+		ios:
+			this.state.iOSTypePickerDeployed ?
+					<View style={styles.iOSBackground}>					 
+						<Picker
+						  selectedValue={this.state.stattype}
+						  style={{height: 50, width: 170}}
+						  onValueChange={this.onTypeChange}>
+						  <Picker.Item label="Blood Glucose" value="Blood Glucose"/>
+						  <Picker.Item label="Food Log" value="Food Log"/>
+						  <Picker.Item label="Weight"  value="Weight"/>
+						</Picker>
+						<View style = {styles.Whenbtn}>
+						   <Button title="Done" onPress={() => this.setState({
+								iOSTypePickerDeployed:false
+							   })
+						   }/>
+						</View>
+					</View>
+			
+			:
+			 
+					<View style = {styles.Whenbtn}>
+					   <Button title={this.state.stattype} onPress={() => this.setState({
+							iOSTypePickerDeployed:true
+						   })
+						   }/>
+					</View>
+			
+	  });
+  }
+  
   temporalPicker = () => {
 	  return Platform.select({
 		  android: 
@@ -306,14 +349,7 @@ onNotesChange = (text) => {
             
 			<View style = {styles.Valrow}>
 			<View  >
-		<Picker
-		  selectedValue={this.state.stattype}
-		  style={{height: 50, width: 170}}
-		  onValueChange={this.onTypeChange}>
-		  <Picker.Item label="Blood Glucose" value="Blood Glucose"/>
-		  <Picker.Item label="Food Log" value="Food Log"/>
-		  <Picker.Item label="Weight"  value="Weight"/>
-		</Picker>
+		{this.typePicker()}
 		</View>
 		{ this.state.stattype != "Food Log" && 
 			
