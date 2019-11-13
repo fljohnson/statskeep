@@ -331,7 +331,7 @@ onNotesChange = (text) => {
           <Button onPress={this.timepicker} title={this.state.statdate.toTimeString()} />
         </View>
         
-        { this.state.show && temporalPicker() }
+        { this.state.show && this.temporalPicker() }
         <View style={styles.Valrow}>
 			<TextInput
 				placeholder={"Notes"}
