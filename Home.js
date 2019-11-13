@@ -180,7 +180,6 @@ do_fetch = (when_start,when_end,what_type) => {
 			  {
 				  this.setState({goods:[]});	
 			  }
-			  alert("No records found");
 			  return;
 		  }
 		   var temp = [];

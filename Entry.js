@@ -5,6 +5,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { openDatabase } from 'react-native-sqlite-storage';
 import {TouchableWithoutFeedback,Keyboard} from 'react-native';
 var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
+var statisticTypes = ["Blood Glucose","Food Log","Weight"];
+
 export class Entry extends Component {
   //TODO: add user-friendly date and time to this state
   state = {
@@ -233,6 +235,8 @@ gotVisible = () =>{
 });
 }
 
+
+
 onTypeChange = (itemValue, itemIndex) => {
     this.setState({stattype: itemValue});
 }
@@ -266,6 +270,24 @@ onNotesChange = (text) => {
 	}
   }
   
+  deployIOSTypePicker = () => {
+	var opciones = statisticTypes;
+	opciones.push("Cancel");
+	ActionSheetIOS.showActionSheetWithOptions(
+  {
+    options: opciones,
+    cancelButtonIndex: statisticTypes.length,
+  },
+  (buttonIndex) => {
+    if (buttonIndex < statisticTypes.length) {
+      this.setState({
+		  stattype:statisticTypes[buttonIndex]
+	  });
+    }
+  },
+);
+}
+
   typePicker = () => {
 	  return Platform.select({
 		  android:
@@ -279,33 +301,11 @@ onNotesChange = (text) => {
 			</Picker>
 			,
 		ios:
-			this.state.iOSTypePickerDeployed ?
-					<View style={styles.iOSBackground}>					 
-						<Picker
-						  selectedValue={this.state.stattype}
-						  style={{height: 50, width: 170}}
-						  onValueChange={this.onTypeChange}>
-						  <Picker.Item label="Blood Glucose" value="Blood Glucose"/>
-						  <Picker.Item label="Food Log" value="Food Log"/>
-						  <Picker.Item label="Weight"  value="Weight"/>
-						</Picker>
-						<View style = {styles.Whenbtn}>
-						   <Button title="Done" onPress={() => this.setState({
-								iOSTypePickerDeployed:false
-							   })
-						   }/>
-						</View>
-					</View>
 			
-			:
-			 
-					<View style = {styles.Whenbtn}>
-					   <Button title={this.state.stattype} onPress={() => this.setState({
-							iOSTypePickerDeployed:true
-						   })
-						   }/>
-					</View>
-			
+			<View style = {styles.Whenbtn}>
+			   <Button title={this.state.stattype} onPress={() => this.deployIOSTypePicker()
+				   }/>
+			</View>
 	  });
   }
   
@@ -432,7 +432,9 @@ const styles = StyleSheet.create({
 	  marginTop:9,
 	},
 	iOSBackground: {
-		backgroundColor:'white'
+		backgroundColor:'white',
+		opacity:1,
+		zIndex:2
 	}
 });
 
