@@ -338,13 +338,12 @@ onNotesChange = (text) => {
 
 	
     return (
-        
-          <View style={styles.EntryDlg}>
-          <TouchableWithoutFeedback onPress={() => {
-					  console.log("BOO");
+        <TouchableWithoutFeedback onPress={() => {
 					  Keyboard.dismiss();
 				  }
 			  }>
+          <View style={styles.EntryDlg}>
+          
             <View>
             
 			<View style = {styles.Valrow}>
@@ -396,8 +395,8 @@ onNotesChange = (text) => {
               </View>
 			</View>
             </View>
-            </TouchableWithoutFeedback>
           </View>
+            </TouchableWithoutFeedback>
     );
   }
 }

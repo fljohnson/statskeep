@@ -231,7 +231,6 @@ constructor(props) {
 			  {
 				  this.setState({goods:[]});	
 			  }
-			  alert("No records found");
 			  return;
 		  }
 		   var temp = [];
