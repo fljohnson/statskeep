@@ -271,7 +271,7 @@ onNotesChange = (text) => {
   }
   
   deployIOSTypePicker = () => {
-	var opciones = statisticTypes;
+	var opciones = Array.from(statisticTypes);
 	opciones.push("Cancel");
 	ActionSheetIOS.showActionSheetWithOptions(
   {
