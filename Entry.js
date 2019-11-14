@@ -2,9 +2,14 @@ import React, {Component} from 'react';
 import {Modal, Text, TouchableHighlight, View, Button, Alert,Picker,TextInput,StyleSheet} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { openDatabase } from 'react-native-sqlite-storage';
+//import { openDatabase } from 'react-native-sqlite-storage';
+import SQLite from 'react-native-sqlite-storage';
 import {ActionSheetIOS,TouchableWithoutFeedback,Keyboard} from 'react-native';
-var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
+var db = SQLite.openDatabase({ name: 'lemon_db.db', createFromLocation : 1},
+      () => {},
+      error => {
+        Alert.alert(error);
+      });
 var statisticTypes = ["Blood Glucose","Food Log","Weight"];
 
 export class Entry extends Component {
@@ -163,6 +168,19 @@ do_fetch = (rec_id) => {
 	  'INSERT INTO stats (utc_timestamp, statistic, val, notes) VALUES (?,?,?,?)',
 	  [when_secs, stat_type, value,notes],
 	  (tx, results) => {
+		   Alert.alert(
+			'Completion',
+			results,[
+			  {
+				text: 'OK',
+				onPress: () =>
+                  that.props.navigation.goBack(),
+				  //that.props.navigation.navigate('HomeScreen'),
+			  },
+			],
+			{ cancelable: false }
+		  );
+		  /*
 		console.log('Results', results.rowsAffected);
 		if (results.rowsAffected > 0) {
 		  Alert.alert(
@@ -182,6 +200,7 @@ do_fetch = (rec_id) => {
 			console.log("Blew it:".results);
 		  Alert.alert('Whiffed');
 		}
+		*/
 	  }
 	);
   });
