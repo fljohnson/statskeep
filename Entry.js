@@ -170,7 +170,7 @@ do_fetch = (rec_id) => {
 	  (tx, results) => {
 		   Alert.alert(
 			'Completion',
-			results,[
+			JSON.stringify(results),[
 			  {
 				text: 'OK',
 				onPress: () =>
