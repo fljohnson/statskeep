@@ -16,6 +16,7 @@
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* statskeepTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* statskeepTests.m */; };
+		CD00F22B1DCA671400DC4B5F /* lemon_db.db in Resources */ = {isa = PBXBuildFile; fileRef = CD00F22A1DCA671400DC4B5F /* lemon_db.db */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 		2D02E4901E0B4A5D006451C7 /* statskeep-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "statskeep-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		CD00F22A1DCA671400DC4B5F /* lemon_db.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = lemon_db.db; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 		13B07FAE1A68108700A75B9A /* statskeep */ = {
 			isa = PBXGroup;
 			children = (
+				CD00F2271DCA66E300DC4B5F /* www */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -155,6 +158,14 @@
 				2D02E4901E0B4A5D006451C7 /* statskeep-tvOSTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CD00F2271DCA66E300DC4B5F /* www */ = {
+			isa = PBXGroup;
+			children = (
+				CD00F22A1DCA671400DC4B5F /* lemon_db.db */,
+			);
+			name = www;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
