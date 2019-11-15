@@ -5,11 +5,11 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 //import { openDatabase } from 'react-native-sqlite-storage';
 import SQLite from 'react-native-sqlite-storage';
 import {ActionSheetIOS,TouchableWithoutFeedback,Keyboard} from 'react-native';
-var db = SQLite.openDatabase({ name: 'lemon_db.db', createFromLocation : 1},
+var db; /* = SQLite.openDatabase({ name: 'lemon_db.db', createFromLocation : 1},
       () => {},
       error => {
         Alert.alert(error);
-      });
+      });*/
 var statisticTypes = ["Blood Glucose","Food Log","Weight"];
 
 export class Entry extends Component {
@@ -30,7 +30,16 @@ export class Entry extends Component {
 	onDoneEditing = () =>{
 	};
   
-  
+  constructor(props) {
+	  super(props);
+	  if db == null {
+			db = SQLite.openDatabase({ name: 'lemon_db.db', createFromLocation : 1},
+				  () => {},
+				  error => {
+					Alert.alert(error);
+				  });
+		}
+  }
   setDate = (event, date) => {
     date = date || this.state.statdate;
     var put = ""
@@ -164,7 +173,7 @@ do_fetch = (rec_id) => {
 		
   var that = this;
   try {
-	db.transaction(function(tx) {
+	db.transaction((tx) => {
 		try{
 			tx.executeSql(
 	  'INSERT INTO stats (utc_timestamp, statistic, val, notes) VALUES (?,?,?,?)',
