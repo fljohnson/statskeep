@@ -163,19 +163,6 @@ do_fetch = (rec_id) => {
 	do_insert = (when_secs,stat_type,value,notes) => {
 		
   var that = this;
-   Alert.alert(
-			'Completion',
-			"we did get called",[
-			  {
-				text: 'OK',
-				onPress: () =>
-                  that.props.navigation.goBack(),
-				  //that.props.navigation.navigate('HomeScreen'),
-			  },
-			],
-			{ cancelable: false }
-		  );
-  return;
   try {
 	db.transaction(function(tx) {
 		try{
