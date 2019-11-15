@@ -32,7 +32,7 @@ export class Entry extends Component {
   
   constructor(props) {
 	  super(props);
-	  if db == null {
+	  if(db == null) {
 			db = SQLite.openDatabase({ name: 'lemon_db.db', createFromLocation : 1},
 				  () => {},
 				  error => {
