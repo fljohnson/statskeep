@@ -163,6 +163,19 @@ do_fetch = (rec_id) => {
 	do_insert = (when_secs,stat_type,value,notes) => {
 		
   var that = this;
+   Alert.alert(
+			'Completion',
+			"we did get called",[
+			  {
+				text: 'OK',
+				onPress: () =>
+                  that.props.navigation.goBack(),
+				  //that.props.navigation.navigate('HomeScreen'),
+			  },
+			],
+			{ cancelable: false }
+		  );
+  return;
   try {
 	db.transaction(function(tx) {
 		try{
@@ -228,7 +241,7 @@ saveData = () => {
 	if(this.state.notes != null && this.state.notes.length > 0) {
 		trunotes = this.state.notes;
 	}
-	if(this.state.record_id <0){		
+	if(this.state.record_id <1){		
 		this.do_insert(Math.floor(this.state.statdate.getTime()/1000),
 			this.state.stattype,this.state.statvalue,trunotes
 		);
