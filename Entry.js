@@ -163,8 +163,10 @@ do_fetch = (rec_id) => {
 	do_insert = (when_secs,stat_type,value,notes) => {
 		
   var that = this;
+  try {
 	db.transaction(function(tx) {
-	tx.executeSql(
+		try{
+			tx.executeSql(
 	  'INSERT INTO stats (utc_timestamp, statistic, val, notes) VALUES (?,?,?,?)',
 	  [when_secs, stat_type, value,notes],
 	  (tx, results) => {
@@ -203,7 +205,17 @@ do_fetch = (rec_id) => {
 		*/
 	  }
 	);
+		}
+		catch(err) {
+		Alert.alert("INNER FAIL!",JSON.stringify(err));
+	}
+	
   });
+	
+	}
+	catch(err) {
+		Alert.alert("OUTER FAIL!",JSON.stringify(err));
+	}
 }
 
 saveData = () => {
