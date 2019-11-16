@@ -9,9 +9,45 @@ var db = null;
 var statisticTypes = ["Blood Glucose","Food Log","Weight"];
 
 function buildTheBeast() {
-		
-		
-		
+
+		db = SQLite.openDatabase({ name: 'lemon_db.db',createFromLocation: '~lemon_db.db', location:'Library'},
+				  () => {
+					  /*
+					  db.transaction((tx) => {
+							tx.executeSql(
+							"CREATE TABLE `stats` ("+
+							"`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
+							"`utc_timestamp`	INTEGER NOT NULL,"+
+							"`statistic`	TEXT NOT NULL,"+
+							"`val`	TEXT NOT NULL,"+
+							"`notes`	TEXT DEFAULT NULL,"+
+							"`active`	INTEGER DEFAULT 'Y'"+
+						")"
+							);
+							tx.executeSql(
+							"CREATE INDEX `by_type` ON `stats` ("+
+							"`utc_timestamp`	ASC,"+
+							"`statistic`	ASC"+
+						")"
+							);
+							tx.executeSql(
+							"CREATE INDEX `by_present` ON `stats` ("+
+							"`utc_timestamp`	ASC,"+
+							"`active`	DESC"+
+						")"
+							)	;
+						},
+						error => {
+									Alert.alert("Bombed on create:",""+error);
+								  }
+						
+						);*/
+					  },
+				  error => {
+					Alert.alert(error);
+				  });
+				  
+
 		
 }
 
@@ -36,9 +72,6 @@ export class Entry extends Component {
   
   constructor(props) {
 	  super(props);
-	  if(db == null) {
-			buildTheBeast();
-		}
   }
   setDate = (event, date) => {
     date = date || this.state.statdate;
