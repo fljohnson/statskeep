@@ -13,8 +13,9 @@ var db; /* = SQLite.openDatabase({ name: 'lemon_db.db', createFromLocation : 1},
 var statisticTypes = ["Blood Glucose","Food Log","Weight"];
 
 function buildTheBeast() {
-		db = SQLite.openDatabase({ name: 'lemonwhiz.db',location: 'default'},
+		db = SQLite.openDatabase({ name: 'lemon_db.db',location: '~lemon_db.db'},
 				  () => {
+					  /*
 					  db.transaction((tx) => {
 							tx.executeSql(
 							"CREATE TABLE `stats` ("+
@@ -43,7 +44,7 @@ function buildTheBeast() {
 									Alert.alert("Bombed on create:",""+error);
 								  }
 						
-						);
+						);*/
 					  },
 				  error => {
 					Alert.alert(error);
