@@ -9,7 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { openDatabase } from 'react-native-sqlite-storage';
 var CorrectPath = "";
 //var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
-var db = openDatabase({ name: 'lemon_db.db', createFromLocation : location: '~lemon_db.db'});
+var db = openDatabase({ name: 'lemon_db.db', location : '~lemon_db.db'});
 var datatypes = [
 	{
 		name:"Blood Glucose",
