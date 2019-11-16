@@ -6,7 +6,7 @@ import {PermissionsAndroid} from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { openDatabase } from 'react-native-sqlite-storage';
+import SQLite from 'react-native-sqlite-storage';
 var CorrectPath = "";
 //var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
 
@@ -48,7 +48,7 @@ var db = SQLite.openDatabase({ name: 'lemonwhiz.db',location: 'default'},
 				  
 		
 
-var db = openDatabase({ name: 'lemon_db.db', createFromLocation : '~lemon_db.db', location:'Library'});
+//var db = openDatabase({ name: 'lemon_db.db', createFromLocation : '~lemon_db.db', location:'Library'}); //to be deleted
 
 var datatypes = [
 	{
