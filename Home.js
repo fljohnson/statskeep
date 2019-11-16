@@ -8,7 +8,44 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { openDatabase } from 'react-native-sqlite-storage';
 var CorrectPath = "";
-var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
+//var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
+var db = SQLite.openDatabase({ name: 'lemonwhiz.db',location: 'default'},
+				  () => {
+					  db.transaction((tx) => {
+							tx.executeSql(
+							"CREATE TABLE `stats` ("+
+							"`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
+							"`utc_timestamp`	INTEGER NOT NULL,"+
+							"`statistic`	TEXT NOT NULL,"+
+							"`val`	TEXT NOT NULL,"+
+							"`notes`	TEXT DEFAULT NULL,"+
+							"`active`	INTEGER DEFAULT 'Y'"+
+						")"
+							);
+							tx.executeSql(
+							"CREATE INDEX `by_type` ON `stats` ("+
+							"`utc_timestamp`	ASC,"+
+							"`statistic`	ASC"+
+						")"
+							);
+							tx.executeSql(
+							"CREATE INDEX `by_present` ON `stats` ("+
+							"`utc_timestamp`	ASC,"+
+							"`active`	DESC"+
+						")"
+							)	;
+						},
+						error => {
+									Alert.alert("Bombed on create:",""+error);
+								  }
+						
+						);
+					  },
+				  error => {
+					Alert.alert(error);
+				  });
+				  
+		
 
 var datatypes = [
 	{
@@ -669,7 +706,7 @@ filterModalDlg() {
 			  return (
 			   <View style={styles.listItem}>
 				<TouchableOpacity style={styles.sureListItems}
-					onPress={() => this.props.navigation.push('Line', {keya: item.id})}
+					onPress={() => this.props.navigation.push('Line', {keya: item.id,db:db})}
 				>
 					<Text style={styles.itemDate}>{friendly}</Text>
 					<Text style={styles.itemType}>{item.statistic}</Text>
@@ -684,7 +721,7 @@ filterModalDlg() {
         { Platform.OS =="android" && 
 			<TouchableOpacity
 			  activeOpacity={0.7}
-			  onPress={() => this.props.navigation.push('Line', {keya: -1})}
+			  onPress={() => this.props.navigation.push('Line', {keya: -1, db:db})}
 			  style={styles.TouchableOpacityStyle}>
 			  <Icon size={30} name={this.addIcon} style={styles.FloatingButtonStyle} />
 			</TouchableOpacity>

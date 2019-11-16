@@ -5,50 +5,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 //import { openDatabase } from 'react-native-sqlite-storage';
 import SQLite from 'react-native-sqlite-storage';
 import {ActionSheetIOS,TouchableWithoutFeedback,Keyboard} from 'react-native';
-var db; /* = SQLite.openDatabase({ name: 'lemon_db.db', createFromLocation : 1},
-      () => {},
-      error => {
-        Alert.alert(error);
-      });*/
+var db = null;
 var statisticTypes = ["Blood Glucose","Food Log","Weight"];
 
 function buildTheBeast() {
-		db = SQLite.openDatabase({ name: 'lemonwhiz.db',location: 'default'},
-				  () => {
-					  db.transaction((tx) => {
-							tx.executeSql(
-							"CREATE TABLE `stats` ("+
-							"`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
-							"`utc_timestamp`	INTEGER NOT NULL,"+
-							"`statistic`	TEXT NOT NULL,"+
-							"`val`	TEXT NOT NULL,"+
-							"`notes`	TEXT DEFAULT NULL,"+
-							"`active`	INTEGER DEFAULT 'Y'"+
-						")"
-							);
-							tx.executeSql(
-							"CREATE INDEX `by_type` ON `stats` ("+
-							"`utc_timestamp`	ASC,"+
-							"`statistic`	ASC"+
-						")"
-							);
-							tx.executeSql(
-							"CREATE INDEX `by_present` ON `stats` ("+
-							"`utc_timestamp`	ASC,"+
-							"`active`	DESC"+
-						")"
-							)	;
-						},
-						error => {
-									Alert.alert("Bombed on create:",""+error);
-								  }
-						
-						);
-					  },
-				  error => {
-					Alert.alert(error);
-				  });
-				  
 		
 		
 		
@@ -124,6 +84,7 @@ export class Entry extends Component {
   'willFocus',
   payload => {
     const currec = (this.props.navigation.getParam('keya', '-2'));
+    db = (this.props.navigation.getParam('db', null));
     this.loadData(currec);
   }
 );
