@@ -271,10 +271,26 @@ saveData = () => {
 	if(this.state.notes != null && this.state.notes.length > 0) {
 		trunotes = this.state.notes;
 	}
-	if(this.state.record_id <1){		
-		this.do_insert(Math.floor(this.state.statdate.getTime()/1000),
-			this.state.stattype,this.state.statvalue,trunotes
-		);
+	var failure = "";
+	if(this.state.record_id <1){	
+		if(db == null) {
+			failure += "db not set on willFocus";
+		}
+		
+		if(this.props.navigation.getParam('db', null) == null)
+		{
+			fallure += ";getting the parameter later failed too";
+		}
+		if(failure.length > 0){
+			
+			Alert.alert("Rejected db param");
+		}
+		else
+		{	
+			this.do_insert(Math.floor(this.state.statdate.getTime()/1000),
+				this.state.stattype,this.state.statvalue,trunotes
+			);
+		}
 	}
 	else {
 		var starting_id = this.state.original_id;
