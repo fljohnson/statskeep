@@ -10,7 +10,15 @@ import SQLite from 'react-native-sqlite-storage';
 var CorrectPath = "";
 //var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
 
-var db = SQLite.openDatabase({ name: 'lemonwhiz.db',location: 'default'},
+//var db = SQLite.openDatabase({ name: 'lemonwhiz.db',location: 'default'},
+
+const database_name = "lemonwhiz.db";
+const database_version = "1.0";
+const database_displayname = "SQLite Test Database";
+const database_size = 200000;
+
+var db = SQLite.openDatabase(database_name, database_version, database_displayname, database_size, 
+
 				  () => {
 					  db.transaction((tx) => {
 							tx.executeSql(
@@ -37,13 +45,13 @@ var db = SQLite.openDatabase({ name: 'lemonwhiz.db',location: 'default'},
 							)	;
 						},
 						error => {
-									Alert.alert("Bombed on create:",""+error);
+									Alert.alert("Bombed on create:",JSON.stringify(error));
 								  }
 						
 						);
 					  },
 				  error => {
-					Alert.alert(error);
+					Alert.alert("Different crash on create:",JSON.stringify(error));
 				  });
 				  
 		
