@@ -13,7 +13,7 @@ var db; /* = SQLite.openDatabase({ name: 'lemon_db.db', createFromLocation : 1},
 var statisticTypes = ["Blood Glucose","Food Log","Weight"];
 
 function buildTheBeast() {
-		db = SQLite.openDatabase({ name: 'lemon_db.db',createFromLocation: '~lemon_db.db'},
+		db = SQLite.openDatabase({ name: 'lemon_db.db',createFromLocation: '~lemon_db.db', location:'Library'},
 				  () => {
 					  /*
 					  db.transaction((tx) => {
