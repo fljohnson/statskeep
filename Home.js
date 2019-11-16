@@ -48,7 +48,6 @@ var db = SQLite.openDatabase({ name: 'lemonwhiz.db',location: 'default'},
 				  
 		
 
-=======
 var db = openDatabase({ name: 'lemon_db.db', createFromLocation : '~lemon_db.db', location:'Library'});
 
 var datatypes = [
