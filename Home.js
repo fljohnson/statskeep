@@ -677,7 +677,7 @@ filterModalDlg() {
 			  return (
 			   <View style={styles.listItem}>
 				<TouchableOpacity style={styles.sureListItems}
-					onPress={() => this.props.navigation.push('Line', {keya: item.id,db:db})}
+					onPress={() => this.props.navigation.push('Line', {keya: item.id})}
 				>
 					<Text style={styles.itemDate}>{friendly}</Text>
 					<Text style={styles.itemType}>{item.statistic}</Text>
