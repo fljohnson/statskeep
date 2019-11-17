@@ -2,54 +2,11 @@ import React, {Component} from 'react';
 import {Modal, Text, TouchableHighlight, View, Button, Alert,Picker,TextInput,StyleSheet} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-//import { openDatabase } from 'react-native-sqlite-storage';
-import SQLite from 'react-native-sqlite-storage';
+import {Database as DB} from "./DB.js";
 import {ActionSheetIOS,TouchableWithoutFeedback,Keyboard} from 'react-native';
-var db = null;
 var statisticTypes = ["Blood Glucose","Food Log","Weight"];
 
-function buildTheBeast() {
 
-		db = SQLite.openDatabase({ name: 'lemon_db.db',createFromLocation: '~lemon_db.db', location:'Library'},
-				  () => {
-					  /*
-					  db.transaction((tx) => {
-							tx.executeSql(
-							"CREATE TABLE `stats` ("+
-							"`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
-							"`utc_timestamp`	INTEGER NOT NULL,"+
-							"`statistic`	TEXT NOT NULL,"+
-							"`val`	TEXT NOT NULL,"+
-							"`notes`	TEXT DEFAULT NULL,"+
-							"`active`	INTEGER DEFAULT 'Y'"+
-						")"
-							);
-							tx.executeSql(
-							"CREATE INDEX `by_type` ON `stats` ("+
-							"`utc_timestamp`	ASC,"+
-							"`statistic`	ASC"+
-						")"
-							);
-							tx.executeSql(
-							"CREATE INDEX `by_present` ON `stats` ("+
-							"`utc_timestamp`	ASC,"+
-							"`active`	DESC"+
-						")"
-							)	;
-						},
-						error => {
-									Alert.alert("Bombed on create:",""+error);
-								  }
-						
-						);*/
-					  },
-				  error => {
-					Alert.alert(error);
-				  });
-				  
-
-		
-}
 
 
 export class Entry extends Component {
@@ -117,13 +74,12 @@ export class Entry extends Component {
   'willFocus',
   payload => {
     const currec = (this.props.navigation.getParam('keya', '-2'));
-    db = (this.props.navigation.getParam('db', null));
     this.loadData(currec);
   }
 );
 
 do_fetch = (rec_id) => {
-	db.transaction(tx => {
+	DB.db.transaction(tx => {
       tx.executeSql(
         'SELECT * FROM stats WHERE id = ?',
         [rec_id],
@@ -162,7 +118,7 @@ do_fetch = (rec_id) => {
 
 	do_replace = (oldrec,when_secs,stat_type,value,notes,original_id) => {
 		var that = this;
-	db.transaction(function(tx) { 
+	DB.db.transaction(function(tx) { 
 		tx.executeSql(
 			'UPDATE stats SET active=\'N\' WHERE id = (?)',
 			[oldrec],
@@ -207,7 +163,7 @@ do_fetch = (rec_id) => {
 		
   var that = this;
   try {
-	db.transaction((tx) => {
+	DB.db.transaction((tx) => {
 		try{
 			tx.executeSql(
 	  'INSERT INTO stats (utc_timestamp, statistic, val, notes) VALUES (?,?,?,?)',
@@ -273,24 +229,11 @@ saveData = () => {
 	}
 	var failure = "";
 	if(this.state.record_id <1){	
-		if(db == null) {
-			failure += "db not set on willFocus";
-		}
-		
-		if(this.props.navigation.getParam('db', null) == null)
-		{
-			fallure += ";getting the parameter later failed too";
-		}
-		if(failure.length > 0){
 			
-			Alert.alert("Rejected db param");
-		}
-		else
-		{	
 			this.do_insert(Math.floor(this.state.statdate.getTime()/1000),
 				this.state.stattype,this.state.statvalue,trunotes
 			);
-		}
+		
 	}
 	else {
 		var starting_id = this.state.original_id;
