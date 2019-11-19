@@ -13,7 +13,6 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		0223803B31D943A2B27FD2E8 /* libSQLite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FADDB56530034E7F848357D6 /* libSQLite.a */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* statskeepTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* statskeepTests.m */; };
@@ -64,7 +63,6 @@
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		CD00F2251DCA655B00DC4B5F /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		CD00F22A1DCA671400DC4B5F /* lemon_db.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = lemon_db.db; sourceTree = "<group>"; };
-		FADDB56530034E7F848357D6 /* libSQLite.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libSQLite.a; sourceTree = "<group>"; };
 
 /* End PBXFileReference section */
 
@@ -80,8 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD00F2261DCA655B00DC4B5F /* libsqlite3.0.tbd in Frameworks */,
-				0223803B31D943A2B27FD2E8 /* libSQLite.a in Frameworks */,
+				CD00F2261DCA655B00DC4B5F /* libsqlite3.0.tbd in Frameworks */
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,14 +169,6 @@
 				00E356EE1AD99517003FC87E /* statskeepTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* statskeep-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* statskeep-tvOSTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		CD00F2001DCA650700DC4B5F /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				CD00F2231DCA650700DC4B5F /* libSQLite.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -312,12 +301,6 @@
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = CD00F2001DCA650700DC4B5F /* Products */;
-					ProjectRef = 284D531574B94107A5D5AC68 /* SQLite.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* statskeep */,
@@ -328,16 +311,6 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXReferenceProxy section */
-
-		CD00F2231DCA650700DC4B5F /* libSQLite.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libSQLite.a;
-			remoteRef = CD00F2221DCA650700DC4B5F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		00E356EC1AD99517003FC87E /* Resources */ = {
