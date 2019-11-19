@@ -31,7 +31,9 @@ function openCB() {
 						")"
 							)	;
 						}
+						)
 }
+
 function errorCB(err) {
   Alert.alert("FALTA!",JSON.stringify(err));
 }	
