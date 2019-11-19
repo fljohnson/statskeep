@@ -229,17 +229,9 @@ saveData = () => {
 	}
 	var failure = "";
 	if(this.state.record_id <1){	
-			
-
-			Alert.alert("Rejected db param",failure);
-		}
-		else
-		{	
-
 			this.do_insert(Math.floor(this.state.statdate.getTime()/1000),
 				this.state.stattype,this.state.statvalue,trunotes
 			);
-		}
 	}
 	else {
 		var starting_id = this.state.original_id;
