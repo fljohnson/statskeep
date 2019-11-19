@@ -283,7 +283,7 @@ saveData = () => {
 		}
 		if(failure.length > 0){
 			
-			Alert.alert("Rejected db param");
+			Alert.alert("Rejected db param",failure);
 		}
 		else
 		{	
