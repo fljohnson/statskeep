@@ -239,7 +239,7 @@ saveData = () => {
 			this.do_insert(Math.floor(this.state.statdate.getTime()/1000),
 				this.state.stattype,this.state.statvalue,trunotes
 			);
-		
+		}
 	}
 	else {
 		var starting_id = this.state.original_id;
