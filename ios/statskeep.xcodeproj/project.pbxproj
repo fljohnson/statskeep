@@ -337,7 +337,7 @@
 			remoteRef = CD00F2221DCA650700DC4B5F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-/* End PBXReferenceProxy section */'
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		00E356EC1AD99517003FC87E /* Resources */ = {
