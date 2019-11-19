@@ -6,60 +6,15 @@ import {PermissionsAndroid} from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import SQLite from 'react-native-sqlite-storage';
+import {Database as DB} from "./DB.js";
+
 var CorrectPath = "";
 //var db = openDatabase({ name: 'lemon_db.db', createFromLocation : 1});
 
 //var db = SQLite.openDatabase({ name: 'lemonwhiz.db',location: 'default'},
 
-const database_name = "lemonwhiz.db";
-const database_version = "1.0";
-const database_displayname = "SQLite Test Database";
-const database_size = 200000;
-var db;
-try{
-	db = SQLite.openDatabase(database_name, database_version, database_displayname, database_size, 
 
-				  () => {
-					  db.transaction((tx) => {
-							tx.executeSql(
-							"CREATE TABLE `stats` ("+
-							"`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
-							"`utc_timestamp`	INTEGER NOT NULL,"+
-							"`statistic`	TEXT NOT NULL,"+
-							"`val`	TEXT NOT NULL,"+
-							"`notes`	TEXT DEFAULT NULL,"+
-							"`active`	INTEGER DEFAULT 'Y'"+
-						")"
-							);
-							tx.executeSql(
-							"CREATE INDEX `by_type` ON `stats` ("+
-							"`utc_timestamp`	ASC,"+
-							"`statistic`	ASC"+
-						")"
-							);
-							tx.executeSql(
-							"CREATE INDEX `by_present` ON `stats` ("+
-							"`utc_timestamp`	ASC,"+
-							"`active`	DESC"+
-						")"
-							)	;
-						},
-						error => {
-									Alert.alert("Bombed on create:",JSON.stringify(error));
-								  }
-						
-						);
-					  },
-				  error => {
-					Alert.alert("Different crash on create:",JSON.stringify(error));
-				  });
-	}
-	catch(urk){
-		Alert.alert("DB in toilet:",JSON.stringify(urk));
 
-	}			  
-		
 
 //var db = openDatabase({ name: 'lemon_db.db', createFromLocation : '~lemon_db.db', location:'Library'}); //to be deleted
 
@@ -216,7 +171,7 @@ do_fetch = (when_start,when_end,what_type) => {
 		augend =" and "+augend;
 	}
 	
-	db.transaction(tx => {
+	DB.db.transaction(tx => {
       tx.executeSql(
         'SELECT * FROM stats WHERE active=\'Y\''+augend+' ORDER BY utc_timestamp',
         addlParms,
@@ -266,7 +221,7 @@ constructor(props) {
 	us = this;
 	this.state.forExport = false;
 	this.state.filename ="";
-  db.transaction(tx => {
+  DB.db.transaction(tx => {
       tx.executeSql(
         'SELECT * FROM stats WHERE active=\'Y\' ORDER BY utc_timestamp',
         [],
@@ -722,7 +677,7 @@ filterModalDlg() {
 			  return (
 			   <View style={styles.listItem}>
 				<TouchableOpacity style={styles.sureListItems}
-					onPress={() => this.props.navigation.push('Line', {keya: item.id,db:db})}
+					onPress={() => this.props.navigation.push('Line', {keya: item.id})}
 				>
 					<Text style={styles.itemDate}>{friendly}</Text>
 					<Text style={styles.itemType}>{item.statistic}</Text>
@@ -737,7 +692,7 @@ filterModalDlg() {
         { Platform.OS =="android" && 
 			<TouchableOpacity
 			  activeOpacity={0.7}
-			  onPress={() => this.props.navigation.push('Line', {keya: -1, db:db})}
+			  onPress={() => this.props.navigation.push('Line', {keya: -1})}
 			  style={styles.TouchableOpacityStyle}>
 			  <Icon size={30} name={this.addIcon} style={styles.FloatingButtonStyle} />
 			</TouchableOpacity>
