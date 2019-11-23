@@ -33,7 +33,7 @@ var datatypes = [
 		decimal_places:1
 	},
 ];
-var us; //singleton the hard way
+var us=null; //singleton the hard way
 async function diskJockeying() {
 	if(Platform.OS == 'ios') {
 		CorrectPath=RNFetchBlob.fs.dirs.DocumentDir;
@@ -67,10 +67,15 @@ async function diskJockeying() {
 function handleActionBarBtn(posn){
 	if(posn === 0){
 		if(us != null) {
-			us.openFilterDlg(false);
+			us.do_fetch(null,null,null);
 		}
 	}
 	if(posn === 1){
+		if(us != null) {
+			us.openFilterDlg(false);
+		}
+	}
+	if(posn === 2){
 		if(us != null) {
 			us.openFilterDlg(true);
 		}
@@ -86,6 +91,7 @@ export class FlatListBasics extends Component {
 		editing: false,
 			goods: [],
 			export_goods:[],
+			mode:'',
 		filter: { 
 			from:new Date((new Date()).toDateString()+" 00:00:00"),
 			to:new Date((new Date()).toDateString()+" 23:59:59"),
@@ -113,14 +119,19 @@ export class FlatListBasics extends Component {
 				title: 'Stats',
 				headerRight: () => (
 						<View style={styles.toolbar}>
-						<View style={styles.tbActionWrap}>
+						<View style={styles.tbActionWrapLong}>
 						<TouchableOpacity onPress={() => handleActionBarBtn(0)}>
-						  <Text style={styles.tbaction}>FILTER</Text>
+							<Text style={styles.tbaction}>SHOW ALL</Text>
+						</TouchableOpacity>
+						</View>
+						<View style={styles.tbActionWrap}>
+						<TouchableOpacity onPress={() => handleActionBarBtn(1)}>
+							<Text style={styles.tbaction}>FILTER</Text>
 						</TouchableOpacity>
 						</View>
 						
 						<View style={styles.tbActionWrap}>
-						<TouchableOpacity onPress={() => handleActionBarBtn(1)}>  
+						<TouchableOpacity onPress={() => handleActionBarBtn(2)}>  
 						  <Text style={styles.tbaction}>EXPORT</Text>
 						  </TouchableOpacity>
 						  </View>
@@ -345,6 +356,9 @@ doFiltering = () => {
 	if(this.state.filter.useTo) {
 		when_end = this.state.filter.to;
 	}  
+	this.setState({
+		mode:"filtering"
+	});
 	this.do_fetch(when_start,when_end,types);
 }
 
@@ -652,7 +666,7 @@ filterModalDlg() {
       {this.saveExportDlg()}
       {Platform.OS == "ios" && 
 		   <SegmentedControlIOS
-    values={["One", "Two"]}
+    values={["Show All", "Filter","Export"]}
     selectedIndex={this.state.selectedIndex}
     onChange={event => {
       this.setState({ selectedIndex: event.nativeEvent.selectedSegmentIndex });
@@ -835,6 +849,11 @@ sureListItems: {
   tbActionWrap: {
 	  height:36,
 	  width:54,
+	  paddingTop:9
+  },
+  tbActionWrapLong: {
+	  height:36,
+	  width:74,
 	  paddingTop:9
   },
   tbaction:{
