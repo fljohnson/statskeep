@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, TextInput, Alert,Dimensions,Button,Modal, Switch } from 'react-native';
 import {Platform} from 'react-native';
 import {PermissionsAndroid} from 'react-native';
-//import SegmentedControlIOS from "@react-native-community/segmented-control";
-import {SegmentedControlIOS} from "react-native";
+import { Toolbar } from 'react-native-ios-kit';
 import RNFetchBlob from 'rn-fetch-blob';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -664,15 +663,7 @@ filterModalDlg() {
       <View style={styles.container}>
       {this.filterModalDlg()}
       {this.saveExportDlg()}
-      {Platform.OS == "ios" && 
-		   <SegmentedControlIOS
-    values={["Show All", "Filter","Export"]}
-    selectedIndex={this.state.selectedIndex}
-    onChange={event => {
-      this.setState({ selectedIndex: event.nativeEvent.selectedSegmentIndex });
-    }}
-  />
-}
+      
           
         <FlatList
           data={this.state.goods}
@@ -724,7 +715,25 @@ filterModalDlg() {
 			  <Icon size={30} name={this.addIcon} style={styles.FloatingButtonStyle} />
 			</TouchableOpacity>
 		}
-        
+        {Platform.OS == "ios" && 
+				 
+		  <Toolbar
+			  items={[
+				{
+				  title: 'Show All',
+				  onPress: () => handleActionBarBtn(0),
+				},
+				{
+				  title: 'Filter',
+				  onPress: () => handleActionBarBtn(1),
+				},
+				{
+				  title: 'Export',
+				  onPress: () => handleActionBarBtn(2),
+				},
+			  ]}
+			/>
+		}
       </View>
       
     );
