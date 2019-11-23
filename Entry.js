@@ -3,7 +3,7 @@ import {Modal, Text, TouchableHighlight, View, Button, Alert,Picker,TextInput,St
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import {Database as DB} from "./DB.js";
-import {ActionSheetIOS,TouchableWithoutFeedback,Keyboard} from 'react-native';
+import {ActionSheetIOS,TouchableWithoutFeedback,Keyboard,KeyboardAvoidingView} from 'react-native';
 var statisticTypes = ["Blood Glucose","Food Log","Weight"];
 
 
@@ -373,7 +373,7 @@ onNotesChange = (text) => {
 					  Keyboard.dismiss();
 				  }
 			  }>
-          <View style={styles.EntryDlg}>
+          <KeyboardAvoidingView style={styles.EntryDlg}>
           
             <View>
             
@@ -426,7 +426,7 @@ onNotesChange = (text) => {
               </View>
 			</View>
             </View>
-          </View>
+          </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
     );
   }

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { FlatList, StyleSheet, Text, View,TouchableOpacity,Image, TextInput, Alert,Dimensions,Button,Modal, Switch } from 'react-native';
 import {Platform} from 'react-native';
 import {PermissionsAndroid} from 'react-native';
-
+import SegmentedControlIOS from "@react-native-community/segmented-control";
 import RNFetchBlob from 'rn-fetch-blob';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -143,6 +143,10 @@ export class FlatListBasics extends Component {
 	})
   
   ;
+
+	  
+	
+
   //this makes "all" visible when this page becomes visible 
   didBlurSubscription = this.props.navigation.addListener(
   'willFocus',
@@ -217,10 +221,10 @@ do_fetch = (when_start,when_end,what_type) => {
 
 constructor(props) {
 	super(props);
-	diskJockeying();
 	us = this;
 	this.state.forExport = false;
 	this.state.filename ="";
+	diskJockeying();
   DB.db.transaction(tx => {
       tx.executeSql(
         'SELECT * FROM stats WHERE active=\'Y\' ORDER BY utc_timestamp',
@@ -645,7 +649,15 @@ filterModalDlg() {
       <View style={styles.container}>
       {this.filterModalDlg()}
       {this.saveExportDlg()}
-      
+      {Platform.OS == "ios" && 
+		   <SegmentedControlIOS
+    values={["One", "Two"]}
+    selectedIndex={this.state.selectedIndex}
+    onChange={event => {
+      this.setState({ selectedIndex: event.nativeEvent.selectedSegmentIndex });
+    }}
+  />
+}
           
         <FlatList
           data={this.state.goods}

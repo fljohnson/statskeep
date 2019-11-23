@@ -9,7 +9,7 @@ const database_size = 200000;
 function openCB() {
   Database.db.transaction((tx) => {
 							tx.executeSql(
-							"CREATE TABLE `stats` ("+
+							"CREATE TABLE IF NOT EXISTS `stats` ("+
 							"`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
 							"`utc_timestamp`	INTEGER NOT NULL,"+
 							"`statistic`	TEXT NOT NULL,"+
@@ -19,13 +19,13 @@ function openCB() {
 						")"
 							);
 							tx.executeSql(
-							"CREATE INDEX `by_type` ON `stats` ("+
+							"CREATE INDEX IF NOT EXISTS  `by_type` ON `stats` ("+
 							"`utc_timestamp`	ASC,"+
 							"`statistic`	ASC"+
 						")"
 							);
 							tx.executeSql(
-							"CREATE INDEX `by_present` ON `stats` ("+
+							"CREATE INDEX IF NOT EXISTS  `by_present` ON `stats` ("+
 							"`utc_timestamp`	ASC,"+
 							"`active`	DESC"+
 						")"
