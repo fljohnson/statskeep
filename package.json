@@ -11,17 +11,19 @@
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "^2.1.0",
-    "eslint-plugin-react": "^7.16.0",
-    "mem": "^4.3.0",
+    "@react-native-community/toolbar-android": "0.1.0-rc.2",
+    "eslint-plugin-react": "7.20.3",
+    "mem": "4.3.0",
     "react": "16.9.0",
-    "react-native": "0.61.3",
-    "react-native-gesture-handler": "^1.5.1",
+    "react-native": "^0.61.3",
+    "react-native-gesture-handler": "1.7.0",
     "react-native-ios-kit": "0.0.7",
-    "react-native-sqlite-storage": "^4.1.0",
-    "react-native-vector-icons": "^6.6.0",
-    "react-navigation": "^4.0.10",
-    "react-navigation-stack": "^1.10.3",
-    "rn-fetch-blob": "^0.11.2"
+    "react-native-screens": "2.9.0",
+    "react-native-sqlite-storage": "4.1.0",
+    "react-native-vector-icons": "6.7.0",
+    "react-navigation": "4.4.0",
+    "react-navigation-stack": "1.10.3",
+    "rn-fetch-blob": "0.11.2"
   },
   "devDependencies": {
     "@babel/core": "7.6.4",
